@@ -1,4 +1,4 @@
-package com.example.walabotsmartsecuritydefense.ui.dashboard;
+package com.example.walabotsmartsecuritydefense.ui.monitoring;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,17 +14,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.walabotsmartsecuritydefense.R;
 
-public class DashboardFragment extends Fragment {
+public class MonitoringFragment extends Fragment {
 
-    private com.example.walabotsmartsecuritydefense.ui.dashboard.DashboardViewModel dashboardViewModel;
+    private MonitoringViewModel monitoringViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                ViewModelProviders.of(this).get(com.example.walabotsmartsecuritydefense.ui.dashboard.DashboardViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        final TextView textView = root.findViewById(R.id.text_dashboard);
-        dashboardViewModel.getText().observe(this, new Observer<String>() {
+        monitoringViewModel =
+                ViewModelProviders.of(this).get(MonitoringViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_monitoring, container, false);
+        final TextView textView = root.findViewById(R.id.text_monitoring);
+        monitoringViewModel.getText().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
