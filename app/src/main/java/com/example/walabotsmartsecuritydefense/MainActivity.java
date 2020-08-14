@@ -1,7 +1,11 @@
 package com.example.walabotsmartsecuritydefense;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
+import com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,10 +16,36 @@ import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
 
+    private View mBottomNavigation;
+    private boolean isLogined = true;
+
+    static Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mContext = this;
         setContentView(R.layout.activity_main);
+
+
+//        mBottomNavigation = findViewById(R.id.nav_view);
+//        mBottomNavigation.setVisibility(View.INVISIBLE);
+
+        Intent isLogin = this.getIntent();
+        boolean loginSuccess = isLogin.getBooleanExtra("isLogin", false);
+
+        if (loginSuccess) {
+            isLogined = false;
+        }
+
+        if (isLogined) {
+            Intent intent_MobileVerify = new Intent(mContext, BeginLoginActivity.class);
+            startActivity(intent_MobileVerify);
+            finish();
+        }
+
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.

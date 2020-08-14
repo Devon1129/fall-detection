@@ -18,6 +18,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity"
+            android:label="@string/actionbar_title_beginlogin"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait" />
+
     </application>
 
 </manifest>
