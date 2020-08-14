@@ -14,16 +14,22 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import timber.log.Timber;
+
 public class MainActivity extends AppCompatActivity {
 
     private View mBottomNavigation;
-    private boolean isLogined = true;
+    private boolean isLogined = false;
 
     static Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
 
         mContext = this;
         setContentView(R.layout.activity_main);
@@ -36,10 +42,10 @@ public class MainActivity extends AppCompatActivity {
         boolean loginSuccess = isLogin.getBooleanExtra("isLogin", false);
 
         if (loginSuccess) {
-            isLogined = false;
+            isLogined = true;
         }
 
-        if (isLogined) {
+        if (!isLogined) {
             Intent intent_MobileVerify = new Intent(mContext, BeginLoginActivity.class);
             startActivity(intent_MobileVerify);
             finish();
