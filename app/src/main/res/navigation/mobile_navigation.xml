@@ -3,13 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
-
-    <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.walabotsmartsecuritydefense.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+    app:startDestination="@+id/navigation_monitoring">
 
     <fragment
         android:id="@+id/navigation_monitoring"
@@ -18,21 +12,27 @@
         tools:layout="@layout/fragment_monitoring" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.walabotsmartsecuritydefense.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_history"
+        android:name="com.example.walabotsmartsecuritydefense.ui.history.HistoricalRecordFragment"
+        android:label="@string/title_history"
+        tools:layout="@layout/fragment_historical_record" />
 
     <fragment
-        android:id="@+id/navigation_even"
-        android:name="com.example.walabotsmartsecuritydefense.ui.notifications.NotificationsFragment"
+        android:id="@+id/navigation_notifications"
+        android:name="com.example.walabotsmartsecuritydefense.ui.notifications.ExceptionNotificationsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_even" />
+        tools:layout="@layout/fragment_exception_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_announcement"
+        android:name="com.example.walabotsmartsecuritydefense.ui.announcement.MessageAnnouncementFragment"
+        android:label="@string/title_announcement"
+        tools:layout="@layout/fragment_message_announcement" />
 
     <fragment
         android:id="@+id/navigation_account"
-        android:name="com.example.walabotsmartsecuritydefense.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
+        android:name="com.example.walabotsmartsecuritydefense.ui.account.AccountFragment"
+        android:label="@string/title_account"
         tools:layout="@layout/fragment_account" />
 
 </navigation>

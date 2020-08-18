@@ -1,16 +1,16 @@
-package com.example.walabotsmartsecuritydefense.ui.home;
+package com.example.walabotsmartsecuritydefense.ui.announcement;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class HomeViewModel extends ViewModel {
+public class MessageAnnouncementViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public HomeViewModel() {
+    public MessageAnnouncementViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+        mText.setValue("This is Message Announcement fragment");
     }
 
     public LiveData<String> getText() {

@@ -1,4 +1,4 @@
-package com.example.walabotsmartsecuritydefense.ui.notifications;
+package com.example.walabotsmartsecuritydefense.ui.history;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,17 +14,17 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.walabotsmartsecuritydefense.R;
 
-public class NotificationsFragment extends Fragment {
+public class HistoricalRecordFragment extends Fragment {
 
-    private NotificationsViewModel notificationsViewModel;
+    private HistoricalRecordViewModel historyViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        notificationsViewModel =
-                ViewModelProviders.of(this).get(NotificationsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_notifications, container, false);
-        final TextView textView = root.findViewById(R.id.text_notifications);
-        notificationsViewModel.getText().observe(this, new Observer<String>() {
+        historyViewModel =
+                ViewModelProviders.of(this).get(HistoricalRecordViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_historical_record, container, false);
+        final TextView textView = root.findViewById(R.id.text_hisory);
+        historyViewModel.getText().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
