@@ -75,6 +75,7 @@ public class BeginLoginActivity extends BaseActivity {
                     Log.d(TAG, "account: " + account + "; " + "password: " + password + "~~~");
 
                     cloudManager.getApitokenAsync(urlApiSignin, account, password);
+                    preferenceManager.saveAccount(account);
 
     //                String apitoken = preferenceManager.getApiToken();
     //                if (apitoken.equals("") | apitoken != null) {

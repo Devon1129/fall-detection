@@ -41,7 +41,7 @@ public class MainActivity extends BaseActivity {
         preferenceManager = new PreferenceManager(this);
         setContentView(R.layout.activity_main);
 
-        boolean loginStatus;
+        boolean loginStatus = false;
         loginStatus = preferenceManager.getLoginStatus();
         preferenceManager.setLoginStatus(loginStatus);
         Log.d(TAG, "loginStatus: " + loginStatus + "~~~");

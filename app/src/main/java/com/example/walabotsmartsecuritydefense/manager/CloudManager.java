@@ -42,7 +42,7 @@ public class CloudManager {
 
     //private void getApitokenAsync() {//hannah_test
     public void getApitokenAsync(String url, String username, String password) {
-        Log.d("tttt", "getApitokenAsync: " + url + "username=" + username + "&" + "password=" + password);
+        Log.d(TAG, "getApitokenAsync: " + url + "username=" + username + "&" + "password=" + password + "~~~");
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -56,26 +56,33 @@ public class CloudManager {
             @Override
             public void onFailure(Request request, IOException e) {
                 final String myRequest = request.body().toString();
-                Log.d("tttt", "onFailure " + myRequest + " ; " + e.toString());
+                Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString() + "~~~");
             }
 
             @Override
             public void onResponse(Response response) throws IOException {
                 final String myResponse = response.body().string();
-                Log.d("tttt", "myResponse: " + myResponse);
+                Log.d(TAG, "myResponse: " + myResponse + "~~~");
                 if (response.isSuccessful()) {//回調的方法執行在子線程。
 
                     try {
                         JSONObject json = new JSONObject(myResponse);
                         String strStatus = json.getString("status");
-                        Log.d("tttt", "strStatus: " + strStatus);
+                        Log.d(TAG, "strStatus: " + strStatus + "~~~");
                         if (strStatus.equals("Success")) {
                             String getApiToken = json.getString("apitoken");
+                            String getName = json.getString("name");
+                            String getShool = json.getString("customerId");
+                            String getRole = json.getString("role");
 
 
-                            Log.d("tttt", "getApitokenAsync(): " + getApiToken);
+                            Log.d(TAG, "getApitokenAsync(): api token " + getApiToken + "~~~");
                             preferenceManager.saveApiToken(getApiToken);
                             preferenceManager.saveLoginStatus(true);
+
+                            preferenceManager.saveUserName(getName);
+                            preferenceManager.saveShoolName(getShool);
+                            preferenceManager.saveRoleName(getRole);
 
                             //範例
                             //mAccount.setText(json.getJSONObject("data").getString("first_name")+ " "+json.getJSONObject("data").getString("last_name"));
@@ -89,7 +96,7 @@ public class CloudManager {
 //                            finish();
 
                         } else {
-                            Log.d("tttt", "signin failure!!!");
+                            Log.d(TAG, "signin failure!!!");
 
                             Timber.i("Signin API Result Status, Signin Failure");
                         }
