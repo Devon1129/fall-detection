@@ -12,8 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.walabotsmartsecuritydefense.Application;
+import com.example.walabotsmartsecuritydefense.BaseActivity;
 import com.example.walabotsmartsecuritydefense.MainActivity;
 import com.example.walabotsmartsecuritydefense.R;
+import com.example.walabotsmartsecuritydefense.manager.PreferenceManager;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -26,7 +28,10 @@ import java.io.IOException;
 
 import timber.log.Timber;
 
-public class BeginLoginActivity extends AppCompatActivity {
+public class BeginLoginActivity extends BaseActivity {
+
+
+    private String TAG = getClass().toString();
 
     private Button mBeginLogin;
     private EditText mAccount, mPassword;
@@ -40,6 +45,8 @@ public class BeginLoginActivity extends AppCompatActivity {
 
         initial();
 
+        preferenceManager = new PreferenceManager(this);
+
         mBeginLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
@@ -48,27 +55,43 @@ public class BeginLoginActivity extends AppCompatActivity {
                 ///Log.d("tttt", mPassword.getText().toString());
 
                 ///判斷欄位是否為空
-//                if (mAccount.getText().toString().matches("") ||
-//                    mPassword.getText().toString().matches("")) {
-//                    Toast.makeText(BeginLoginActivity.this,"帳號或密碼部不正確", Toast.LENGTH_LONG).show();
-//                }else {
+                if (mAccount.getText().toString().matches("") ||
+                    mPassword.getText().toString().matches("")) {
+                    Toast.makeText(BeginLoginActivity.this,"請填入帳號或密碼部", Toast.LENGTH_LONG).show();
+                }else {
 
-                String account = mAccount.getText().toString();
-                String password = mPassword.getText().toString();
+                    String account = mAccount.getText().toString();
+                    String password = mPassword.getText().toString();
 
-                final String urlApiSignin =
-                        Application.urlSignin;
-//                        Application.urlSignin + "username=" + account + "&" + "password=" + password;//hannah_test
-//                        Application.urlSignin + "username=" + "xhwg85" + "&" + "password=" + "hwacom";//hannah_test
+                    final String urlApiSignin = Application.urlSignin;
+    //                        Application.urlSignin + "username=" + account + "&" + "password=" + password;//hannah_test
+    //                        Application.urlSignin + "username=" + "xhwg85" + "&" + "password=" + "hwacom";//hannah_test
 
-                //hannah_test
-                account = "xhwg85";
-                password = "hwacom";
+                    //hannah_test
+                    account = "xhwg85";
+                    password = "hwacom";
 
-                Log.d("tttt", "account: " + account + "; " + "password: " + password);
-                getApitokenAsync(urlApiSignin, account, password);
-//                getApitokenAsync();//hannah_test
+                    //to do:sharepreference save account&password
+                    Log.d(TAG, "account: " + account + "; " + "password: " + password + "~~~");
 
+                    cloudManager.getApitokenAsync(urlApiSignin, account, password);
+
+    //                String apitoken = preferenceManager.getApiToken();
+    //                if (apitoken.equals("") | apitoken != null) {
+    //                    cloudManager.getApitokenAsync(urlApiSignin, account, password);
+    ////                    getApitokenAsync();//hannah_test
+    //                }else {
+    //
+    //                }
+    //
+                    Log.d(TAG, "isLogin: " + isLogin + "~~~");
+                    boolean isLogin = preferenceManager.getLoginStatus();
+                    if (isLogin) {
+                        Intent intent = new Intent(BeginLoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
             }
         });
     }
@@ -114,64 +137,5 @@ public class BeginLoginActivity extends AppCompatActivity {
 //        }).start();
 //    }
 
-//private void getApitokenAsync() {//hannah_test
-    private void getApitokenAsync(String url, String username, String password) {
-        Log.d("tttt", "getApitokenAsync: " + url + "username=" + username + "&" + "password=" + password);
 
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(url + "username=" + username + "&" + "password=" + password)
-//                .url("http://60.248.34.228:81/walabot/api/signin.php?username=xhwg85&password=hwacom")//hannah_test
-                .build();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                final String myRequest = request.body().toString();
-                Log.d("tttt", "onFailure " + myRequest + " ; " + e.toString());
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                final String myResponse = response.body().string();
-                Log.d("tttt", "myResponse: " + myResponse);
-
-                if (response.isSuccessful()) {//回調的方法執行在子線程。
-                    BeginLoginActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                JSONObject json = new JSONObject(myResponse);
-                                String strStatus = json.getString("status");
-                                Log.d("tttt", "strStatus: " + strStatus);
-                                if (strStatus.equals("Success")) {
-                                    String apiToken = json.getString("apitoken");
-
-                                    Log.d("tttt", "apiToken: " + apiToken);
-                                    //範例
-                                    //mAccount.setText(json.getJSONObject("data").getString("first_name")+ " "+json.getJSONObject("data").getString("last_name"));
-                                    //mAccount.setText(apiToken);//hannah_test
-
-                                    Timber.i("Signin API Result Status, Signin Success");
-
-                                    Intent intent = new Intent(BeginLoginActivity.this, MainActivity.class);
-                                    intent.putExtra("isLogin", isLogin);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    Log.d("tttt", "signin failure!!!");
-
-                                    Timber.i("Signin API Result Status, Signin Failure");
-
-                                    Toast.makeText(BeginLoginActivity.this, "登入失敗，無效帳戶或密碼", Toast.LENGTH_LONG).show();
-                                }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }
-            }
-        });
-    }
 }

@@ -11,4 +11,8 @@
     <string name="password_login">密碼: </string>
 
     <string name="actionbar_title_beginlogin">登入</string>
+
+
+    <!-- Database 相關 -->
+    <string name="shared_pref">sharedPref</string>
 </resources>

@@ -3,9 +3,11 @@ package com.example.walabotsmartsecuritydefense;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity;
+import com.example.walabotsmartsecuritydefense.manager.PreferenceManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,12 +18,16 @@ import androidx.navigation.ui.NavigationUI;
 
 import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
+
+    private String TAG = getClass().toString();
 
     private View mBottomNavigation;
     private boolean isLogined = false;
 
     static Context mContext;
+
+    String apitoken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,23 +38,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mContext = this;
+        preferenceManager = new PreferenceManager(this);
         setContentView(R.layout.activity_main);
 
+        boolean loginStatus;
+        loginStatus = preferenceManager.getLoginStatus();
+        preferenceManager.setLoginStatus(loginStatus);
+        Log.d(TAG, "loginStatus: " + loginStatus + "~~~");
 
-//        mBottomNavigation = findViewById(R.id.nav_view);
-//        mBottomNavigation.setVisibility(View.INVISIBLE);
-
-        Intent isLogin = this.getIntent();
-        boolean loginSuccess = isLogin.getBooleanExtra("isLogin", false);
-
-        if (loginSuccess) {
+        if (loginStatus) {
             isLogined = true;
+        }else {
+            isLogined = false;
         }
+
+        Log.d(TAG, "isLogined: " + isLogined + "; " +
+                "loginStatus: " + loginStatus + "~~~");
 
         if (!isLogined) {
             Intent intent_MobileVerify = new Intent(mContext, BeginLoginActivity.class);
             startActivity(intent_MobileVerify);
             finish();
+        }else if(isLogined) {
+            apitoken = preferenceManager.getApiToken();
+            preferenceManager.setApiTokenResult(apitoken);
+            Log.d(TAG, "apitoken: " + apitoken + "~~~");
+
+            final String urlApiSignin = Application.urlSignin;
+
+            //cloudManager.getApitokenAsync(urlApiSignin, account, password);
         }
 
 
