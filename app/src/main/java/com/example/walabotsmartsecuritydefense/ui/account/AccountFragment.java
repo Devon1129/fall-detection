@@ -30,7 +30,7 @@ public class AccountFragment extends Fragment {
     private String TAG = getClass().toString();
 
     private AccountViewModel accountViewModel;
-    private TextView shoolName, account, name, appVersion, phoneModel;
+    private TextView shoolName, account, name, appVersion, osSystemVersion, phoneModel;
     private Button logout;
 
     protected CloudManager cloudManager;
@@ -111,12 +111,18 @@ public class AccountFragment extends Fragment {
 
     public void getAppVersion() {
         //int versionCode = BuildConfig.VERSION_CODE;
+        //app版號
         String versionName = BuildConfig.VERSION_NAME;
-
         //Log.d(TAG, "version: " + versionCode);
         Log.d(TAG, "versionName: " + versionName + "~~~");
 
+
+        //android 手機，作業系統版號
+        String osSystem = Build.VERSION.RELEASE;
+        Log.d(TAG, "ttttt: " + osSystem );
+
         appVersion.setText(versionName);
+        osSystemVersion.setText("Android " + osSystem);
     }
 
     private void initial(View root) {
@@ -124,6 +130,7 @@ public class AccountFragment extends Fragment {
         account = (TextView)root.findViewById(R.id.tv_account);
         name = (TextView)root.findViewById(R.id.tv_name);
         appVersion = (TextView)root.findViewById(R.id.tv_app_version);
+        osSystemVersion = (TextView)root.findViewById(R.id.tv_os_system_version);
         phoneModel = (TextView)root.findViewById(R.id.tv_phone_model);
         logout = (Button) root.findViewById(R.id.logout);
     }
