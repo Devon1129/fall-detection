@@ -18,6 +18,7 @@ public class PreferenceManager {
     private String mShoolName;
     private String mRole;
     private String mAccount;
+    private String mPassword;
     private Boolean mLoginStatus = false;
 
 
@@ -29,6 +30,7 @@ public class PreferenceManager {
     private static final String PREFS_GET_API_LOGIN_SHOOL = "get_api_login_shool";
     private static final String PREFS_GET_API_LOGIN_ROLE = "get_api_login_role";
     private static final String PREFS_GET_ACCOUNT = "get_account";
+    private static final String PREFS_GET_PASSWORD = "get_password";
 
     public PreferenceManager(@NonNull Context context) {
         this.context = context;
@@ -54,6 +56,25 @@ public class PreferenceManager {
                 .apply();
         mAccount = account;
         Timber.d("saveAccount:%s", account);
+    }
+
+    /*
+       about Password
+    */
+    public String getPassword() {
+        String myPassword = pref.getString(PREFS_GET_PASSWORD, mPassword);
+        Log.d("PreferenceManager", "get login password: " + myPassword);
+
+        return myPassword;
+    }
+
+    //儲存密碼
+    public void savePassword(String password) {
+        String myPassword = PREFS_GET_PASSWORD;
+        pref.edit().putString(myPassword, password)
+                .apply();
+        mPassword = password;
+        Timber.d("savePassword:%s", password);
     }
 
      /*

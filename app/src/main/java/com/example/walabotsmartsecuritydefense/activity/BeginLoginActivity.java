@@ -68,14 +68,15 @@ public class BeginLoginActivity extends BaseActivity {
     //                        Application.urlSignin + "username=" + "xhwg85" + "&" + "password=" + "hwacom";//hannah_test
 
                     //hannah_test
-                    account = "xhwg85";
-                    password = "hwacom";
+                    //account = "xhwg85";
+                    //password = "hwacom";
 
                     //to do:sharepreference save account&password
                     Log.d(TAG, "account: " + account + "; " + "password: " + password + "~~~");
 
                     cloudManager.getApitokenAsync(urlApiSignin, account, password);
                     preferenceManager.saveAccount(account);
+                    preferenceManager.savePassword(password);
 
     //                String apitoken = preferenceManager.getApiToken();
     //                if (apitoken.equals("") | apitoken != null) {
@@ -91,6 +92,8 @@ public class BeginLoginActivity extends BaseActivity {
                         Intent intent = new Intent(BeginLoginActivity.this, MainActivity.class);
                         startActivity(intent);
                         finish();
+                    }else {
+                        //Toast.makeText(BeginLoginActivity.this,"查無此帳號", Toast.LENGTH_LONG).show();
                     }
                 }
             }

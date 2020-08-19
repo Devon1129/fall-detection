@@ -1,13 +1,13 @@
 package com.example.walabotsmartsecuritydefense.ui.account;
 
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,8 +16,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.walabotsmartsecuritydefense.Application;
 import com.example.walabotsmartsecuritydefense.BuildConfig;
+import com.example.walabotsmartsecuritydefense.MainActivity;
 import com.example.walabotsmartsecuritydefense.R;
+import com.example.walabotsmartsecuritydefense.manager.CloudManager;
 import com.example.walabotsmartsecuritydefense.manager.PreferenceManager;
 
 import static org.litepal.util.BaseUtility.capitalize;
@@ -28,7 +31,18 @@ public class AccountFragment extends Fragment {
 
     private AccountViewModel accountViewModel;
     private TextView shoolName, account, name, appVersion, phoneModel;
+    private Button logout;
 
+    protected CloudManager cloudManager;
+    protected PreferenceManager preferenceManager;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        cloudManager = new CloudManager(getContext());
+        preferenceManager = new PreferenceManager(getContext());
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -37,7 +51,31 @@ public class AccountFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_account, container, false);
 
         initial(root);
-        setInformation();
+        showInformation();
+
+        //登出button
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String urlApiSignout = Application.urlSignout;
+
+                cloudManager.logoutAsync(urlApiSignout, preferenceManager.getAccount(), preferenceManager.getPassword());
+
+                boolean isLogin = preferenceManager.getLoginStatus();
+                Log.d("ttttt", "isLogin: " + isLogin);
+
+                //將登入狀態，儲存為登出狀態
+                if (isLogin) {
+                    preferenceManager.setLoginStatus(false);
+
+                    Log.d("ttttt", "click logout button: " + "login status: " +
+                            preferenceManager.getLoginStatus());
+                    Intent intent = new Intent(getContext(), MainActivity.class);
+                    //intent.putExtra("checkLogin", isLogin);
+                    startActivity(intent);
+                }
+            }
+        });
 
         //hannah_test
         final TextView textView = root.findViewById(R.id.text_account);
@@ -50,9 +88,7 @@ public class AccountFragment extends Fragment {
         return root;
     }
 
-    private void setInformation() {
-        PreferenceManager preferenceManager = new PreferenceManager(getContext());
-
+    private void showInformation() {
         phoneModel.setText(getDeviceName());
         getAppVersion();
 
@@ -77,12 +113,11 @@ public class AccountFragment extends Fragment {
         //int versionCode = BuildConfig.VERSION_CODE;
         String versionName = BuildConfig.VERSION_NAME;
 
-        //Log.d("bbb1", "version: " + versionCode);
+        //Log.d(TAG, "version: " + versionCode);
         Log.d(TAG, "versionName: " + versionName + "~~~");
 
         appVersion.setText(versionName);
     }
-
 
     private void initial(View root) {
         shoolName = (TextView)root.findViewById(R.id.tv_shool_name);
@@ -90,5 +125,6 @@ public class AccountFragment extends Fragment {
         name = (TextView)root.findViewById(R.id.tv_name);
         appVersion = (TextView)root.findViewById(R.id.tv_app_version);
         phoneModel = (TextView)root.findViewById(R.id.tv_phone_model);
+        logout = (Button) root.findViewById(R.id.logout);
     }
 }
