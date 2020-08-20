@@ -12,14 +12,17 @@ import com.android.volley.toolbox.Volley;
 import com.example.walabotsmartsecuritydefense.Application;
 import com.example.walabotsmartsecuritydefense.MainActivity;
 import com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity;
+import com.example.walabotsmartsecuritydefense.table.Announcement;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 import java.io.IOException;
 
@@ -57,8 +60,14 @@ public class CloudManager {
 
             @Override
             public void onFailure(Request request, IOException e) {
-                final String myRequest = request.body().toString();
-                Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString() + "~~~");
+                try {
+                    if (request != null) {
+                        final String myRequest = request.body().toString();
+                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString() + "~~~");
+                    }
+                }catch (Exception exception) {
+                    Log.d(TAG, "exception: " + exception.toString() + "~~~");
+                }
             }
 
             @Override
@@ -160,7 +169,7 @@ public class CloudManager {
     //api/signout.php?username=xxx&password=xxx&apitoken=xxx
     public void logoutAsync(String url, String username, String password) {
         //apitoken
-        Log.d(TAG, "logoutAsync: " + url + "username=" + username + "&" + "password=" + password + "~~~");
+        Log.d(TAG, "logoutAsync: " + url + "username=" + username + "&" + "password=" + password + "&" + "apitoken=" + preferenceManager.getApiToken()+ "~~~");
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -170,8 +179,14 @@ public class CloudManager {
 
             @Override
             public void onFailure(Request request, IOException e) {
-                final String myRequest = request.body().toString();
-                Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString() + "~~~");
+                try {
+                    if (request != null) {
+                        final String myRequest = request.body().toString();
+                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString() + "~~~");
+                    }
+                }catch (Exception exception) {
+                    Log.d(TAG, "exception: " + exception.toString() + "~~~");
+                }
             }
 
             @Override
@@ -202,6 +217,83 @@ public class CloudManager {
                             Log.d(TAG, "signout failure!!!");
 
                             Timber.i("signout API Result Status, Signin Failure");
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        });
+    }
+
+    //取得訊息佈告
+    //api/dump.php?table=sys_note&apitoken=xxx
+    public void sys_noteAsync(String url) {
+        //apitoken
+        Log.d(TAG, "sys_noteAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken() + "~~~");
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url + "&" + "apitoken=" + preferenceManager.getApiToken())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Request request, IOException e) {
+                try {
+                    if (request != null) {
+                        final String myRequest = request.body().toString();
+                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString() + "~~~");
+                    }
+                }catch (Exception exception) {
+                    Log.d(TAG, "exception: " + exception.toString() + "~~~");
+                }
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d(TAG, "myResponse: " + myResponse + "~~~");
+                if (response.isSuccessful()) {//回調的方法執行在子線程。
+
+                    try {
+
+                        JSONObject json = new JSONObject(myResponse);
+                        String strResult = json.getString("result");
+                        Log.d(TAG, "strStatus: " + strResult + "~~~");
+
+                        JSONArray array = new JSONArray(strResult);
+
+
+                        LitePal.deleteAll(Announcement.class);
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject jsonObject = array.getJSONObject(i);
+                            String id = jsonObject.getString("id");
+                            String category = jsonObject.getString("category");
+                            String content = jsonObject.getString("content");
+                            String sort = jsonObject.getString("sort");
+                            String publishFlag = jsonObject.getString("publishFlag");
+                            String createDate = jsonObject.getString("createDate");
+
+
+                            //hannah_test
+                            Log.d("ttttt", "id: " + id);
+                            Log.d("ttttt", "category: " + category);
+                            Log.d("ttttt", "content: " + content);
+                            Log.d("ttttt", "sort: " + sort);
+                            Log.d("ttttt", "publishFlag: " + publishFlag);
+                            Log.d("ttttt", "createDate: " + createDate);
+
+                            Announcement announcement = new Announcement();
+                            //announcement.setId(id);
+                            announcement.setCategory(category);
+                            announcement.setContent(content);
+                            announcement.setSort(sort);
+                            announcement.setPublishFlag(publishFlag);
+                            announcement.setCreateDate(createDate);
+                            announcement.save();
                         }
 
                     } catch (JSONException e) {

@@ -23,6 +23,7 @@ import com.squareup.okhttp.Response;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.litepal.LitePal;
 
 import java.io.IOException;
 
@@ -53,6 +54,7 @@ public class BeginLoginActivity extends BaseActivity {
                 //hannah_test
                 ///Log.d("tttt", mAccount.getText().toString());
                 ///Log.d("tttt", mPassword.getText().toString());
+                LitePal.getDatabase();//建立資料庫
 
                 ///判斷欄位是否為空
                 if (mAccount.getText().toString().matches("") ||
