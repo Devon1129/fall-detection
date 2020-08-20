@@ -287,7 +287,7 @@ public class CloudManager {
                             Log.d("ttttt", "createDate: " + createDate);
 
                             Announcement announcement = new Announcement();
-                            //announcement.setId(id);
+                            announcement.setSerialNumber(id);
                             announcement.setCategory(category);
                             announcement.setContent(content);
                             announcement.setSort(sort);

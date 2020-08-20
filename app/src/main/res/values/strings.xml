@@ -11,6 +11,7 @@
     <string name="password_login">密碼: </string>
 
     <string name="actionbar_title_beginlogin">登入</string>
+    <string name="actionbar_title_announcement">訊息佈告</string>
 
 
     <!-- Database 相關 -->

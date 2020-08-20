@@ -1,5 +1,7 @@
 package com.example.walabotsmartsecuritydefense.adapter;
 
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,40 +28,17 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         this.mAnnouncementList = announcementList;
     }
 
-    private OnRecyclerViewClickListener listener;
-    public void setItemClickListener(OnRecyclerViewClickListener itemClickListener) {
-        listener = itemClickListener;
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.announcement_list_layout, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
 
-        if(listener != null){
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClickListener(v);
-                }
-            });
-
-            view.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    listener.onItemLongClickListener(v);
-                    return true;
-                }
-            });
-        }
-
-
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AnnouncementAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final AnnouncementAdapter.ViewHolder holder, final int position) {
         Announcement announcement = mAnnouncementList.get(position);
         holder.createDate.setText(announcement.getCreateDate());
         holder.Content.setText(announcement.getContent());
@@ -67,8 +46,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Toast.makeText(MainActivity.this, "onclick" + position, Toast.LENGTH_LONG).show();
-//                addData(holder.getLayoutPosition());
+                Log.d("AnnouncementAdapter", "Announcement onClick");
             }
         });
 
@@ -76,21 +54,20 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
 
             @Override
             public boolean onLongClick(View v) {
-//                Toast.makeText(MainActivity.this, "on long click" + position, Toast.LENGTH_LONG).show();
-//                removeData(holder.getLayoutPosition());
+                Log.d("AnnouncementAdapter", "Announcement onLongClick");
+
                 return true;
             }
         });
 
-//        if(onItemClickListener != null) {
-//            holder.itemView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    onItemClickListener.onItemClick(holder.itemView, position);
-//                }
-//            });
-//        }
-
+        if(onItemClickListener != null) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClickListener.onItemClick(holder.itemView, position);
+                }
+            });
+        }
     }
 
     @Override
@@ -112,18 +89,12 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         }
     }
 
-    public interface OnRecyclerViewClickListener {
-        void onItemClickListener(View view);
-        void onItemLongClickListener(View view);
+    private OnItemClickListener onItemClickListener;
+    public interface OnItemClickListener{
+        void onItemClick(View view , int pos);
     }
 
-
-//    private OnItemClickListener onItemClickListener;
-//    public interface OnItemClickListener{
-//        void onItemClick(View view , int pos);
-//    }
-//
-//    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-//        this.onItemClickListener = onItemClickListener;
-//    }
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
 }

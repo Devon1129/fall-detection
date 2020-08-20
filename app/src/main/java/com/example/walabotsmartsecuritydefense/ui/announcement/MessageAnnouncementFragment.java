@@ -1,11 +1,13 @@
 package com.example.walabotsmartsecuritydefense.ui.announcement;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.walabotsmartsecuritydefense.Application;
 import com.example.walabotsmartsecuritydefense.R;
+import com.example.walabotsmartsecuritydefense.activity.AnnouncementContentActivity;
 import com.example.walabotsmartsecuritydefense.adapter.AnnouncementAdapter;
 import com.example.walabotsmartsecuritydefense.manager.CloudManager;
 import com.example.walabotsmartsecuritydefense.table.Announcement;
@@ -28,17 +31,22 @@ import java.util.List;
 
 public class MessageAnnouncementFragment extends Fragment {
 
+    private String TAG = getClass().toString();
+
     private MessageAnnouncementViewModel announcementViewModel;
 
     private RecyclerView announcementList;
     private AnnouncementAdapter announcement_adapter;
 
     protected CloudManager cloudManager;
+    private List<Announcement> announcements;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         cloudManager = new CloudManager(getContext());
+        announcements = LitePal.findAll(Announcement.class);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -80,45 +88,49 @@ public class MessageAnnouncementFragment extends Fragment {
 //        ListAdapter(getActivity(), this);
         BindData(announcementList);
 
-        announcement_adapter.setItemClickListener(new AnnouncementAdapter.OnRecyclerViewClickListener() {
+        //點擊訊息佈告項目
+        announcement_adapter.setOnItemClickListener(new AnnouncementAdapter.OnItemClickListener() {
             @Override
-            public void onItemClickListener(View view) {
-                int position = announcementList.getChildAdapterPosition(view);
-                switch (position) {
-                    case 0:
-                        Log.d("sssss", "ssssss");
-                        //startActivity(new Intent(context,MainActivity.class));
-                        break;
-                }
-            }
+            public void onItemClick(View view, int pos) {
+                Log.d(TAG, "onItemClick pos " + pos);
 
-            @Override
-            public void onItemLongClickListener(View view) {
+                Intent intent = new Intent();
+                intent.setClass(getActivity(), AnnouncementContentActivity.class);
 
+
+                Announcement announcementInfo = announcements.get(pos);
+//                int id = announcementInfo.getId();
+                String serialNumber = announcementInfo.getSerialNumber();
+
+                //hannah_test
+//                Log.d("LitePal", "id " + announcementInfo.getId());
+//                Log.d("LitePal", "createDate. " + announcementInfo.getCreateDate());
+//                Log.d("LitePal", "sort. " + announcementInfo.getSort());
+
+                //Toast.makeText(getContext(), "SerialNumber: " + announcementInfo.getSerialNumber() + "; pos: " + pos, Toast.LENGTH_SHORT).show();
+
+                Bundle bundle = new Bundle();
+                bundle.putString("serialNumber", serialNumber);
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
-        
-
-//        announcement_adapter.setOnItemClickListener(new AnnouncementAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(View view, int pos) {
-//
-//            }
-//        });
 
         //取得訊息佈告
         final String urlApiSys_note = Application.urlSys_note;
         cloudManager.sys_noteAsync(urlApiSys_note);
 
-        List<Announcement> books = LitePal.findAll(Announcement.class);
+        List<Announcement> announcement = LitePal.findAll(Announcement.class);
 
-        for (Announcement book : books) {
-            Log.d("LitePal", "book name is " + book.getContent());
-            Log.d("LitePal", "book author is " + book.getCategory());
-            Log.d("LitePal", "book pages is " + book.getCreateDate());
-            Log.d("LitePal", "book price is " + book.getId());
-            Log.d("LitePal", "book price is " + book.getPublishFlag());
-            Log.d("LitePal", "book price is " + book.getSort());
+        //hannah_test
+        for (Announcement announcements : announcement) {
+            Log.d("LitePal", "announcements serialNumber is " + announcements.getSerialNumber());
+            Log.d("LitePal", "announcements content is " + announcements.getContent());
+            Log.d("LitePal", "announcements category is " + announcements.getCategory());
+            Log.d("LitePal", "announcements createDate is " + announcements.getCreateDate());
+            Log.d("LitePal", "announcements id is " + announcements.getId());
+            Log.d("LitePal", "announcements publishFlag is " + announcements.getPublishFlag());
+            Log.d("LitePal", "announcements sort is " + announcements.getSort());
 
         }
     }
