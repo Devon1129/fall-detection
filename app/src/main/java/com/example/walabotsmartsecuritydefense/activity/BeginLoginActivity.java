@@ -60,8 +60,8 @@ public class BeginLoginActivity extends BaseActivity {
                     Toast.makeText(BeginLoginActivity.this,"請填入帳號或密碼部", Toast.LENGTH_LONG).show();
                 }else {
 
-                    String account = mAccount.getText().toString();
-                    String password = mPassword.getText().toString();
+                    String account = mAccount.getText().toString().trim();
+                    String password = mPassword.getText().toString().trim();
 
                     final String urlApiSignin = Application.urlSignin;
     //                        Application.urlSignin + "username=" + account + "&" + "password=" + password;//hannah_test
@@ -74,9 +74,17 @@ public class BeginLoginActivity extends BaseActivity {
                     //to do:sharepreference save account&password
                     Log.d(TAG, "account: " + account + "; " + "password: " + password + "~~~");
 
+                    //hannah_test
+//                    boolean getApiLogin = cloudManager.getApitokenAsync(urlApiSignin, account, password);
                     cloudManager.getApitokenAsync(urlApiSignin, account, password);
                     preferenceManager.saveAccount(account);
                     preferenceManager.savePassword(password);
+
+//                    Log.d("ttttt", "getApiLogin: " + getApiLogin);
+//
+//                    if (!getApiLogin) {
+//                        Toast.makeText(BeginLoginActivity.this,"登入失敗", Toast.LENGTH_LONG).show();
+//                    }
 
     //                String apitoken = preferenceManager.getApiToken();
     //                if (apitoken.equals("") | apitoken != null) {
