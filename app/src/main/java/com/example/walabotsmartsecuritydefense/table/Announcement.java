@@ -4,6 +4,7 @@ import org.litepal.crud.LitePalSupport;
 
 public class Announcement extends LitePalSupport {
     private int id;
+    private String serialNumber;
     private String category;
     private String content;
     private String sort;
@@ -17,6 +18,14 @@ public class Announcement extends LitePalSupport {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serial_number) {
+        this.serialNumber = serial_number;
     }
 
     public String getCategory() {
