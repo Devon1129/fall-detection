@@ -19,6 +19,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import org.litepal.LitePal;
+
 import timber.log.Timber;
 
 public class MainActivity extends BaseActivity {
@@ -74,6 +76,10 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //LitePal.getDatabase();//建立資料庫//hannah_test
+
+        Intent valueIntent = this.getIntent();
+        String leaveAnnouncementContent = valueIntent.getStringExtra("announcement");
 
         if (!isLogined) {
             Intent intent_MobileVerify = new Intent(mContext, BeginLoginActivity.class);
@@ -86,6 +92,10 @@ public class MainActivity extends BaseActivity {
             Log.d(TAG, "apitoken: " + apitoken + "~~~");
 
             navView.setSelectedItemId(R.id.navigation_monitoring);
+        }
+
+        if (leaveAnnouncementContent != null) {
+            navView.setSelectedItemId(R.id.navigation_announcement);
         }
 
     }
