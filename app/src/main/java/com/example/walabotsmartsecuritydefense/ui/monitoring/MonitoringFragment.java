@@ -145,6 +145,14 @@ public class MonitoringFragment extends Fragment {
         final String urlApiSys_zone = Application.urlSys_zone;
         cloudManager.zoneAsync(urlApiSys_zone);
 
+        final String urlApiSys_room = Application.urlSys_room;
+        cloudManager.roomAsync(urlApiSys_room);
+
+        final String urlApiSys_device = Application.urlSys_device;
+        cloudManager.deviceAsync(urlApiSys_device);
+
+
+
 
     }
 

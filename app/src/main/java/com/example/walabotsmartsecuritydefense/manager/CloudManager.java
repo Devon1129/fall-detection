@@ -14,6 +14,8 @@ import com.example.walabotsmartsecuritydefense.Application;
 import com.example.walabotsmartsecuritydefense.MainActivity;
 import com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity;
 import com.example.walabotsmartsecuritydefense.table.Announcement;
+import com.example.walabotsmartsecuritydefense.table.monitoring.Device;
+import com.example.walabotsmartsecuritydefense.table.monitoring.Room;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Zone;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
@@ -272,7 +274,7 @@ public class CloudManager {
                         LitePal.deleteAll(Announcement.class);
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject jsonObject = array.getJSONObject(i);
-                            String id = jsonObject.getString("id");
+                            String id = jsonObject.getString("id"); //serialNumber
                             String category = jsonObject.getString("category");
                             String content = jsonObject.getString("content");
                             String sort = jsonObject.getString("sort");
@@ -349,7 +351,7 @@ public class CloudManager {
                         LitePal.deleteAll(Announcement.class);
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject jsonObject = array.getJSONObject(i);
-                            String id = jsonObject.getString("id");
+                            String id = jsonObject.getString("id"); //serialNumber
                             String customerId = jsonObject.getString("customerId");
                             String zoneName = jsonObject.getString("zoneName");
                             String note = jsonObject.getString("note");
@@ -376,6 +378,225 @@ public class CloudManager {
                             zone.setCreateTime(createTime);
                             zone.setUpdateTime(updateTime);
                             zone.save();
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        });
+    }
+
+    //取得設施[監測點]
+    //api/dump.php?table=room&apitoken=xxx
+    public void roomAsync(String url) {
+        //apitoken
+        Log.d(TAG, "roomAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken());
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url + "&" + "apitoken=" + preferenceManager.getApiToken())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Request request, IOException e) {
+                try {
+                    if (request != null) {
+                        final String myRequest = request.body().toString();
+                        Log.d(TAG, "onFailure " + "roomAsync: " + myRequest + " ; " + e.toString());
+                    }
+                }catch (Exception exception) {
+                    Log.d(TAG, "exception: " + "roomAsync: " + exception.toString());
+                }
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d(TAG, "myResponse: " + "roomAsync: " + myResponse);
+                if (response.isSuccessful()) {//回調的方法執行在子線程。
+
+                    try {
+
+                        JSONObject json = new JSONObject(myResponse);
+                        String strResult = json.getString("result");
+                        Log.d(TAG, "strStatus: " + strResult);
+
+                        JSONArray array = new JSONArray(strResult);
+
+                        LitePal.deleteAll(Announcement.class);
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject jsonObject = array.getJSONObject(i);
+                            String id = jsonObject.getString("id"); //serialNumber
+                            String customerId = jsonObject.getString("customerId");
+                            String zoneName = jsonObject.getString("zoneName");
+                            String roomNumber = jsonObject.getString("roomNumber");
+                            String roomType = jsonObject.getString("roomType");
+                            String deviceCount = jsonObject.getString("deviceCount");
+                            String caregiverList = jsonObject.getString("caregiverList");
+                            String residentList = jsonObject.getString("residentList");
+                            String digit2 = jsonObject.getString("digit2");
+                            String style = jsonObject.getString("style");
+                            String note = jsonObject.getString("note");
+                            String activeFlag = jsonObject.getString("activeFlag");
+                            String createTime = jsonObject.getString("createTime");
+                            String updateTime = jsonObject.getString("updateTime");
+
+
+                            //hannah_test
+                            Log.d("ttttt: roomAsync", "id: " + id);
+                            Log.d("ttttt: roomAsync", "customerId: " + customerId);
+                            Log.d("ttttt: roomAsync", "zoneName: " + zoneName);
+                            Log.d("ttttt: roomAsync", "roomNumber: " + roomNumber);
+                            Log.d("ttttt: roomAsync", "roomType: " + roomType);
+                            Log.d("ttttt: roomAsync", "deviceCount: " + deviceCount);
+                            Log.d("ttttt: roomAsync", "caregiverList: " + caregiverList);
+                            Log.d("ttttt: roomAsync", "residentList: " + residentList);
+                            Log.d("ttttt: roomAsync", "digit2: " + digit2);
+                            Log.d("ttttt: roomAsync", "style: " + style);
+                            Log.d("ttttt: roomAsync", "note: " + note);
+                            Log.d("ttttt: roomAsync", "activeFlag: " + activeFlag);
+                            Log.d("ttttt: roomAsync", "createTime: " + createTime);
+                            Log.d("ttttt: roomAsync", "updateTime: " + updateTime);
+
+
+                            Room room = new Room();
+                            room.setSerialNumber(id);
+                            room.setCustomerId(customerId);
+                            room.setZoneName(zoneName);
+                            room.setRoomNumber(roomNumber);
+                            room.setRoomType(roomType);
+                            room.setDeviceCount(deviceCount);
+                            room.setCaregiverList(caregiverList);
+                            room.setResidentList(residentList);
+                            room.setDigit2(digit2);
+                            room.setStyle(style);
+                            room.setNote(note);
+                            room.setActiveFlag(activeFlag);
+                            room.setCreateTime(createTime);
+                            room.setUpdateTime(updateTime);
+                            room.save();
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        });
+    }
+
+    //取得設備:
+    //api/dump.php?table=device&apitoken=xxx
+    public void deviceAsync(String url) {
+        //apitoken
+        Log.d(TAG, "deviceAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken());
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url + "&" + "apitoken=" + preferenceManager.getApiToken())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Request request, IOException e) {
+                try {
+                    if (request != null) {
+                        final String myRequest = request.body().toString();
+                        Log.d(TAG, "onFailure " + "deviceAsync: " + myRequest + " ; " + e.toString());
+                    }
+                }catch (Exception exception) {
+                    Log.d(TAG, "exception: " + "deviceAsync: " + exception.toString());
+                }
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d(TAG, "myResponse: " + "deviceAsync: " + myResponse);
+                if (response.isSuccessful()) {//回調的方法執行在子線程。
+
+                    try {
+
+                        JSONObject json = new JSONObject(myResponse);
+                        String strResult = json.getString("result");
+                        Log.d(TAG, "strStatus: " + strResult);
+
+                        JSONArray array = new JSONArray(strResult);
+
+                        LitePal.deleteAll(Announcement.class);
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject jsonObject = array.getJSONObject(i);
+                            String id = jsonObject.getString("id"); //serialNumber
+                            String customerId = jsonObject.getString("customerId");
+                            String roomId = jsonObject.getString("roomId");
+                            String roomNumber = jsonObject.getString("roomNumber");
+                            String patternId = jsonObject.getString("patternId");
+                            String deviceId = jsonObject.getString("deviceId");
+                            String deviceSerial = jsonObject.getString("deviceSerial");
+                            String deviceMacAddress = jsonObject.getString("deviceMacAddress");
+                            String deviceType = jsonObject.getString("deviceType");
+                            String deviceConfig = jsonObject.getString("deviceConfig");
+                            String deviceModel = jsonObject.getString("deviceModel");
+                            String firmwareVersion = jsonObject.getString("firmwareVersion");
+                            String caregiverList = jsonObject.getString("caregiverList");
+                            String note = jsonObject.getString("note");
+                            String lastStateTime = jsonObject.getString("lastStateTime");
+                            String connectFlag = jsonObject.getString("connectFlag");
+                            String rebootFlag = jsonObject.getString("rebootFlag");
+                            String activeFlag = jsonObject.getString("activeFlag");
+                            String createTime = jsonObject.getString("createTime");
+                            String updateTime = jsonObject.getString("updateTime");
+
+                            //hannah_test
+                            Log.d("ttttt: deviceAsync", "id: " + id);
+                            Log.d("ttttt: deviceAsync", "customerId: " + customerId);
+                            Log.d("ttttt: deviceAsync", "roomId: " + roomId);
+                            Log.d("ttttt: deviceAsync", "roomNumber: " + roomNumber);
+                            Log.d("ttttt: deviceAsync", "patternId: " + patternId);
+                            Log.d("ttttt: deviceAsync", "deviceId: " + deviceId);
+                            Log.d("ttttt: deviceAsync", "deviceSerial: " + deviceSerial);
+                            Log.d("ttttt: deviceAsync", "deviceMacAddress: " + deviceMacAddress);
+                            Log.d("ttttt: deviceAsync", "deviceType: " + deviceType);
+                            Log.d("ttttt: deviceAsync", "deviceConfig: " + deviceConfig);
+                            Log.d("ttttt: deviceAsync", "deviceModel: " + deviceModel);
+                            Log.d("ttttt: deviceAsync", "firmwareVersion: " + firmwareVersion);
+                            Log.d("ttttt: deviceAsync", "caregiverList: " + caregiverList);
+                            Log.d("ttttt: deviceAsync", "note: " + note);
+                            Log.d("ttttt: deviceAsync", "lastStateTime: " + lastStateTime);
+                            Log.d("ttttt: deviceAsync", "connectFlag: " + connectFlag);
+                            Log.d("ttttt: deviceAsync", "rebootFlag: " + rebootFlag);
+                            Log.d("ttttt: deviceAsync", "activeFlag: " + activeFlag);
+                            Log.d("ttttt: deviceAsync", "createTime: " + createTime);
+                            Log.d("ttttt: deviceAsync", "updateTime: " + updateTime);
+
+
+                            Device device = new Device();
+                            device.setSerialNumber(id);
+                            device.setCustomerId(customerId);
+                            device.setRoomId(roomId);
+                            device.setRoomNumber(roomNumber);
+                            device.setPatternId(patternId);
+                            device.setDeviceId(deviceId);
+                            device.setDeviceSerial(deviceSerial);
+                            device.setDeviceMacAddress(deviceMacAddress);
+                            device.setDeviceType(deviceType);
+                            device.setDeviceConfig(deviceConfig);
+                            device.setDeviceModel(deviceModel);
+                            device.setFirmwareVersion(firmwareVersion);
+                            device.setCaregiverList(caregiverList);
+                            device.setNote(note);
+                            device.setLastStateTime(lastStateTime);
+                            device.setConnectFlag(connectFlag);
+                            device.setRebootFlag(rebootFlag);
+                            device.setActiveFlag(activeFlag);
+                            device.setCreateTime(createTime);
+                            device.setUpdateTime(updateTime);
+                            device.save();
                         }
 
                     } catch (JSONException e) {
