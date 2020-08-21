@@ -2,6 +2,8 @@ package com.example.walabotsmartsecuritydefense.ui.announcement;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,7 @@ import com.example.walabotsmartsecuritydefense.table.Announcement;
 
 import org.litepal.LitePal;
 
+import java.io.IOException;
 import java.util.List;
 
 public class MessageAnnouncementFragment extends Fragment {
@@ -99,8 +102,13 @@ public class MessageAnnouncementFragment extends Fragment {
 
 
                 Announcement announcementInfo = announcements.get(pos);
-//                int id = announcementInfo.getId();
+                int id = announcementInfo.getId();
+                Log.d(TAG, "onItemClick announcementInfo: " + announcementInfo);
+
+                Log.d(TAG, "onItemClick id: " + id);
                 String serialNumber = announcementInfo.getSerialNumber();
+
+                Log.d(TAG, "onItemClick serialNumber: " + serialNumber);
 
                 //hannah_test
 //                Log.d("LitePal", "id " + announcementInfo.getId());
@@ -116,9 +124,11 @@ public class MessageAnnouncementFragment extends Fragment {
             }
         });
 
+
+        //放置MainActivity呼叫，這個會來不及儲存資料
         //取得訊息佈告
-        final String urlApiSys_note = Application.urlSys_note;
-        cloudManager.sys_noteAsync(urlApiSys_note);
+//        final String urlApiSys_note = Application.urlSys_note;
+//        cloudManager.sys_noteAsync(urlApiSys_note);
 
         List<Announcement> announcement = LitePal.findAll(Announcement.class);
 
@@ -134,6 +144,7 @@ public class MessageAnnouncementFragment extends Fragment {
 
         }
     }
+
 
     //將訊息佈告，依遞增排序
     private void BindData(RecyclerView view) {

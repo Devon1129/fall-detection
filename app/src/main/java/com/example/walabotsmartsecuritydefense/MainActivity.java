@@ -50,7 +50,7 @@ public class MainActivity extends BaseActivity {
         boolean loginStatus = false;
         loginStatus = preferenceManager.getLoginStatus();
         preferenceManager.setLoginStatus(loginStatus);
-        Log.d(TAG, "loginStatus: " + loginStatus + "~~~");
+        Log.d(TAG, "loginStatus: " + loginStatus);
 
         if (loginStatus) {
             isLogined = true;
@@ -59,7 +59,7 @@ public class MainActivity extends BaseActivity {
         }
 
         Log.d(TAG, "isLogined: " + isLogined + "; " +
-                "loginStatus: " + loginStatus + "~~~");
+                "loginStatus: " + loginStatus);
 
         navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -89,7 +89,7 @@ public class MainActivity extends BaseActivity {
             //獲取apitoken，並更新apitoken
             apitoken = preferenceManager.getApiToken();
             preferenceManager.setApiTokenResult(apitoken);
-            Log.d(TAG, "apitoken: " + apitoken + "~~~");
+            Log.d(TAG, "apitoken: " + apitoken);
 
             navView.setSelectedItemId(R.id.navigation_monitoring);
         }
@@ -97,6 +97,11 @@ public class MainActivity extends BaseActivity {
         if (leaveAnnouncementContent != null) {
             navView.setSelectedItemId(R.id.navigation_announcement);
         }
+
+
+        //取得訊息佈告
+        final String urlApiSys_note = Application.urlSys_note;
+        cloudManager.sys_noteAsync(urlApiSys_note);
 
     }
 
