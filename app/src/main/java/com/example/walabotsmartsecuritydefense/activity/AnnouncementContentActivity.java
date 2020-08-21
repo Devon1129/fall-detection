@@ -42,22 +42,26 @@ public class AnnouncementContentActivity extends AppCompatActivity {
         Log.d(TAG, "serialNumber " + serialNumber);
 
         //查詢指定的序列號相關內容
-        List<Announcement> announcementList =
-                LitePal.select( "content", "createdate").where("serialnumber = ?", serialNumber).find(Announcement.class);
+        if (serialNumber == null | serialNumber.matches("")) {
+            createDate.setText("");
+            content.setText("查無資料");
+        }else {
+            List<Announcement> announcementList =
+                    LitePal.select( "content", "createdate").where("serialnumber = ?", serialNumber).find(Announcement.class);
 
-        Log.d(TAG, "announcementList.size(): " + announcementList.size());
+            Log.d(TAG, "announcementList.size(): " + announcementList.size());
 
-        String announcementContent = announcementList.get(0).getContent();
-        String announcementCreateDate = announcementList.get(0).getCreateDate();
+            String announcementContent = announcementList.get(0).getContent();
+            String announcementCreateDate = announcementList.get(0).getCreateDate();
 
-        createDate.setText(announcementCreateDate);
-        content.setSingleLine(false);//取消只顯示一行機制
-        content.setText(announcementContent);
+            createDate.setText(announcementCreateDate);
+            content.setText(announcementContent);
+        }
     }
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-
 
         if(keyCode == KeyEvent.KEYCODE_BACK) {
             Intent intent = new Intent(AnnouncementContentActivity.this, MainActivity.class);
@@ -77,5 +81,6 @@ public class AnnouncementContentActivity extends AppCompatActivity {
         icon = (ImageView) findViewById(R.id.icon);
         createDate = (TextView)findViewById(R.id.create_date);
         content = (TextView)findViewById(R.id.content);
+        content.setSingleLine(false);//取消只顯示一行機制
     }
 }
