@@ -2,6 +2,7 @@ package com.example.walabotsmartsecuritydefense.manager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import com.example.walabotsmartsecuritydefense.Application;
 import com.example.walabotsmartsecuritydefense.MainActivity;
 import com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity;
 import com.example.walabotsmartsecuritydefense.table.Announcement;
+import com.example.walabotsmartsecuritydefense.table.monitoring.Zone;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -49,7 +51,7 @@ public class CloudManager {
     //登入
     //private void getApitokenAsync() {//hannah_test
     public void getApitokenAsync(String url, String username, String password) {
-        Log.d(TAG, "getApitokenAsync: " + url + "username=" + username + "&" + "password=" + password + "~~~");
+        Log.d(TAG, "getApitokenAsync: " + url + "username=" + username + "&" + "password=" + password);
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -63,23 +65,23 @@ public class CloudManager {
                 try {
                     if (request != null) {
                         final String myRequest = request.body().toString();
-                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString() + "~~~");
+                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString());
                     }
                 }catch (Exception exception) {
-                    Log.d(TAG, "exception: " + exception.toString() + "~~~");
+                    Log.d(TAG, "exception: " + exception.toString());
                 }
             }
 
             @Override
             public void onResponse(Response response) throws IOException {
                 final String myResponse = response.body().string();
-                Log.d(TAG, "myResponse: " + myResponse + "~~~");
+                Log.d(TAG, "myResponse: " + myResponse);
                 if (response.isSuccessful()) {//回調的方法執行在子線程。
 
                     try {
                         JSONObject json = new JSONObject(myResponse);
                         String strStatus = json.getString("status");
-                        Log.d(TAG, "strStatus: " + strStatus + "~~~");
+                        Log.d(TAG, "strStatus: " + strStatus);
                         if (strStatus.equals("Success")) {
                             String getApiToken = json.getString("apitoken");
                             String getName = json.getString("name");
@@ -87,7 +89,7 @@ public class CloudManager {
                             String getRole = json.getString("role");
 
 
-                            Log.d(TAG, "getApitokenAsync(): api token " + getApiToken + "~~~");
+                            Log.d(TAG, "getApitokenAsync(): api token " + getApiToken);
                             preferenceManager.saveApiToken(getApiToken);
                             preferenceManager.saveLoginStatus(true);
 
@@ -169,7 +171,7 @@ public class CloudManager {
     //api/signout.php?username=xxx&password=xxx&apitoken=xxx
     public void logoutAsync(String url, String username, String password) {
         //apitoken
-        Log.d(TAG, "logoutAsync: " + url + "username=" + username + "&" + "password=" + password + "&" + "apitoken=" + preferenceManager.getApiToken()+ "~~~");
+        Log.d(TAG, "logoutAsync: " + url + "username=" + username + "&" + "password=" + password + "&" + "apitoken=" + preferenceManager.getApiToken());
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -182,23 +184,23 @@ public class CloudManager {
                 try {
                     if (request != null) {
                         final String myRequest = request.body().toString();
-                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString() + "~~~");
+                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString());
                     }
                 }catch (Exception exception) {
-                    Log.d(TAG, "exception: " + exception.toString() + "~~~");
+                    Log.d(TAG, "exception: " + exception.toString());
                 }
             }
 
             @Override
             public void onResponse(Response response) throws IOException {
                 final String myResponse = response.body().string();
-                Log.d(TAG, "myResponse: " + myResponse + "~~~");
+                Log.d(TAG, "myResponse: " + myResponse);
                 if (response.isSuccessful()) {//回調的方法執行在子線程。
 
                     try {
                         JSONObject json = new JSONObject(myResponse);
                         String strStatus = json.getString("status");
-                        Log.d(TAG, "strStatus: " + strStatus + "~~~");
+                        Log.d(TAG, "strStatus: " + strStatus);
                         if (strStatus.equals("Success")) {
 
                             preferenceManager.setApiTokenResult("");
@@ -232,7 +234,7 @@ public class CloudManager {
     //api/dump.php?table=sys_note&apitoken=xxx
     public void sys_noteAsync(String url) {
         //apitoken
-        Log.d(TAG, "sys_noteAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken() + "~~~");
+        Log.d(TAG, "sys_noteAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken());
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -245,24 +247,24 @@ public class CloudManager {
                 try {
                     if (request != null) {
                         final String myRequest = request.body().toString();
-                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString() + "~~~");
+                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString());
                     }
                 }catch (Exception exception) {
-                    Log.d(TAG, "exception: " + exception.toString() + "~~~");
+                    Log.d(TAG, "exception: " + exception.toString());
                 }
             }
 
             @Override
             public void onResponse(Response response) throws IOException {
                 final String myResponse = response.body().string();
-                Log.d(TAG, "myResponse: " + myResponse + "~~~");
+                Log.d(TAG, "myResponse: " + myResponse);
                 if (response.isSuccessful()) {//回調的方法執行在子線程。
 
                     try {
 
                         JSONObject json = new JSONObject(myResponse);
                         String strResult = json.getString("result");
-                        Log.d(TAG, "strStatus: " + strResult + "~~~");
+                        Log.d(TAG, "strStatus: " + strResult);
 
                         JSONArray array = new JSONArray(strResult);
 
@@ -294,6 +296,86 @@ public class CloudManager {
                             announcement.setPublishFlag(publishFlag);
                             announcement.setCreateDate(createDate);
                             announcement.save();
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        });
+    }
+
+    //取得區域
+    //api/dump.php?table=zone&apitoken=xxx
+    public void zoneAsync(String url) {
+        //apitoken
+        Log.d(TAG, "zoneAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken());
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url + "&" + "apitoken=" + preferenceManager.getApiToken())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Request request, IOException e) {
+                try {
+                    if (request != null) {
+                        final String myRequest = request.body().toString();
+                        Log.d(TAG, "onFailure " + "zoneAsync: " + myRequest + " ; " + e.toString());
+                    }
+                }catch (Exception exception) {
+                    Log.d(TAG, "exception: " + "zoneAsync: " + exception.toString());
+                }
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d(TAG, "myResponse: " + "zoneAsync: " + myResponse);
+                if (response.isSuccessful()) {//回調的方法執行在子線程。
+
+                    try {
+
+                        JSONObject json = new JSONObject(myResponse);
+                        String strResult = json.getString("result");
+                        Log.d(TAG, "strStatus: " + strResult);
+
+                        JSONArray array = new JSONArray(strResult);
+
+
+                        LitePal.deleteAll(Announcement.class);
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject jsonObject = array.getJSONObject(i);
+                            String id = jsonObject.getString("id");
+                            String customerId = jsonObject.getString("customerId");
+                            String zoneName = jsonObject.getString("zoneName");
+                            String note = jsonObject.getString("note");
+                            String activeFlag = jsonObject.getString("activeFlag");
+                            String createTime = jsonObject.getString("createTime");
+                            String updateTime = jsonObject.getString("updateTime");
+
+
+                            //hannah_test
+                            Log.d("ttttt: zoneAsync", "id: " + id);
+                            Log.d("ttttt: zoneAsync", "customerId: " + customerId);
+                            Log.d("ttttt: zoneAsync", "zoneName: " + zoneName);
+                            Log.d("ttttt: zoneAsync", "note: " + note);
+                            Log.d("ttttt: zoneAsync", "activeFlag: " + activeFlag);
+                            Log.d("ttttt: zoneAsync", "createTime: " + createTime);
+                            Log.d("ttttt: zoneAsync", "updateTime: " + updateTime);
+
+                            Zone zone = new Zone();
+                            zone.setSerialNumber(id);
+                            zone.setCustomerId(customerId);
+                            zone.setZoneName(zoneName);
+                            zone.setNote(note);
+                            zone.setActiveFlag(activeFlag);
+                            zone.setCreateTime(createTime);
+                            zone.setUpdateTime(updateTime);
+                            zone.save();
                         }
 
                     } catch (JSONException e) {
