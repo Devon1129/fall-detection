@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <litepal>
     <dbname value="WalabotStore"></dbname>
-    <version value="3"></version>
+    <version value="4"></version>
 
     <list>
         <mapping class="com.example.walabotsmartsecuritydefense.table.Announcement"></mapping>
+        <!-- 即時監測 -->
+        <mapping class="com.example.walabotsmartsecuritydefense.table.monitoring.Device"></mapping>
+        <mapping class="com.example.walabotsmartsecuritydefense.table.monitoring.Event"></mapping>
+        <mapping class="com.example.walabotsmartsecuritydefense.table.monitoring.Room"></mapping>
+        <mapping class="com.example.walabotsmartsecuritydefense.table.monitoring.Zone"></mapping>
+        <mapping class="com.example.walabotsmartsecuritydefense.table.monitoring.Status"></mapping>
+
     </list>
 </litepal>
