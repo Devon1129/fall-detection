@@ -2,7 +2,9 @@ package com.example.walabotsmartsecuritydefense.manager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -235,6 +237,9 @@ public class CloudManager {
     //取得訊息佈告
     //api/dump.php?table=sys_note&apitoken=xxx
     public void sys_noteAsync(String url) {
+
+        LitePal.deleteAll(Announcement.class);
+
         //apitoken
         Log.d(TAG, "sys_noteAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken());
 
@@ -271,7 +276,6 @@ public class CloudManager {
                         JSONArray array = new JSONArray(strResult);
 
 
-                        LitePal.deleteAll(Announcement.class);
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject jsonObject = array.getJSONObject(i);
                             String id = jsonObject.getString("id"); //serialNumber
@@ -311,7 +315,7 @@ public class CloudManager {
 
     //取得區域
     //api/dump.php?table=zone&apitoken=xxx
-    public void zoneAsync(String url) {
+    public void zoneAsync(String url, final Handler handler) {
         //apitoken
         Log.d(TAG, "zoneAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken());
 
@@ -348,7 +352,6 @@ public class CloudManager {
                         JSONArray array = new JSONArray(strResult);
 
 
-                        LitePal.deleteAll(Announcement.class);
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject jsonObject = array.getJSONObject(i);
                             String id = jsonObject.getString("id"); //serialNumber
@@ -378,6 +381,14 @@ public class CloudManager {
                             zone.setCreateTime(createTime);
                             zone.setUpdateTime(updateTime);
                             zone.save();
+
+                            Message message=new Message();
+
+                            String obj = "zoneAsync";
+                            message.what=1;
+                            message = handler.obtainMessage(1, obj);
+//                            message.obj=werther;
+                            handler.sendMessage(message);
                         }
 
                     } catch (JSONException e) {
@@ -391,7 +402,10 @@ public class CloudManager {
 
     //取得設施[監測點]
     //api/dump.php?table=room&apitoken=xxx
-    public void roomAsync(String url) {
+    public void roomAsync(String url, final Handler handler) {
+
+        LitePal.deleteAll(Room.class);
+
         //apitoken
         Log.d(TAG, "roomAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken());
 
@@ -427,7 +441,6 @@ public class CloudManager {
 
                         JSONArray array = new JSONArray(strResult);
 
-                        LitePal.deleteAll(Announcement.class);
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject jsonObject = array.getJSONObject(i);
                             String id = jsonObject.getString("id"); //serialNumber
@@ -479,6 +492,14 @@ public class CloudManager {
                             room.setCreateTime(createTime);
                             room.setUpdateTime(updateTime);
                             room.save();
+
+                            Message message=new Message();
+
+                            String obj = "roomAsync";
+                            message.what = 2;
+                            message = handler.obtainMessage(2, obj);
+//                            message.obj=werther;
+                            handler.sendMessage(message);
                         }
 
                     } catch (JSONException e) {
@@ -493,6 +514,9 @@ public class CloudManager {
     //取得設備:
     //api/dump.php?table=device&apitoken=xxx
     public void deviceAsync(String url) {
+
+        LitePal.deleteAll(Device.class);
+
         //apitoken
         Log.d(TAG, "deviceAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken());
 
@@ -528,7 +552,6 @@ public class CloudManager {
 
                         JSONArray array = new JSONArray(strResult);
 
-                        LitePal.deleteAll(Announcement.class);
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject jsonObject = array.getJSONObject(i);
                             String id = jsonObject.getString("id"); //serialNumber

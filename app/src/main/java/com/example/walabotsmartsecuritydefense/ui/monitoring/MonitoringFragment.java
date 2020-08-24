@@ -1,7 +1,11 @@
 package com.example.walabotsmartsecuritydefense.ui.monitoring;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +26,11 @@ import com.example.walabotsmartsecuritydefense.ExpandableListRoomDataPump;
 import com.example.walabotsmartsecuritydefense.R;
 import com.example.walabotsmartsecuritydefense.adapter.RoomExpandableListAdapter;
 import com.example.walabotsmartsecuritydefense.manager.CloudManager;
+import com.example.walabotsmartsecuritydefense.table.monitoring.Device;
+import com.example.walabotsmartsecuritydefense.table.monitoring.Room;
+import com.example.walabotsmartsecuritydefense.table.monitoring.Zone;
+
+import org.litepal.LitePal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,12 +48,59 @@ public class MonitoringFragment extends Fragment {
     HashMap<String, List<String>> expandableListDetail;
 
 
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch(msg.what){ //zoneAsync
+                case 1:
+                    expandableListDetail = ExpandableListRoomDataPump.getData();
+                    expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
+                    expandableListAdapter = new RoomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
+                    expandableListView.setAdapter(expandableListAdapter);
+                    setListViewHeightBasedOnChildren(expandableListView);
+                    break;
+                case 2: //roomAsync
+                    expandableListDetail = ExpandableListRoomDataPump.getData();
+                    expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
+                    expandableListAdapter = new RoomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
+                    expandableListView.setAdapter(expandableListAdapter);
+                    setListViewHeightBasedOnChildren(expandableListView);
+                    break;
+            }
+            Log.d( "MoniotringF", "handler: case" );
+
+        }
+    };
+
+
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d("MoniotringF", "onCreate");
+
         cloudManager = new CloudManager(getContext());
+
+        //hannah_test
+        //new MyAsyncTask().execute(urlApiSys_zone);
     }
+
+
+    //hannah_test
+//    class MyAsyncTask extends AsyncTask<String, Void, Void> {
+//        @Override
+//        protected Void doInBackground(String... strings) {
+//            String url = strings[0];
+//            cloudManager.zoneAsync(url, handler);
+//
+//            return null;
+//        }
+//    }
+
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -54,20 +110,11 @@ public class MonitoringFragment extends Fragment {
 
         initial(root);
 
-//        //hannah_test
-//        final TextView textView = root.findViewById(R.id.text_monitoring);
-//        monitoringViewModel.getText().observe(this, new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
-
-        expandableListDetail = ExpandableListRoomDataPump.getData();
-        expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
-        expandableListAdapter = new RoomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
-        expandableListView.setAdapter(expandableListAdapter);
-        setListViewHeightBasedOnChildren(expandableListView);
+//        expandableListDetail = ExpandableListRoomDataPump.getData();
+//        expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
+//        expandableListAdapter = new RoomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
+//        expandableListView.setAdapter(expandableListAdapter);
+//        setListViewHeightBasedOnChildren(expandableListView);
 
         expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
 
@@ -123,35 +170,38 @@ public class MonitoringFragment extends Fragment {
         expandableListView = (ExpandableListView) root.findViewById(R.id.expandable_listview);
 
         //hannah_test
-        final TextView textView = root.findViewById(R.id.text_monitoring);
-        monitoringViewModel.getText().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
-
-
+//        final TextView textView = root.findViewById(R.id.text_monitoring);
+//        monitoringViewModel.getText().observe(this, new Observer<String>() {
+//            @Override
+//            public void onChanged(@Nullable String s) {
+//                textView.setText(s);
+//            }
+//        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
+        Log.d("MoniotringF", "onResume");
+
 //        final String urlApiSignin = Application.urlSignin;
 //        cloudManager.getApitokenAsync(urlApiSignin, "xhwg85", "hwacom2020");
 
         //取得區域
+        LitePal.deleteAll(Zone.class);
         final String urlApiSys_zone = Application.urlSys_zone;
-        cloudManager.zoneAsync(urlApiSys_zone);
+        cloudManager.zoneAsync(urlApiSys_zone, handler);
 
+        //取得設施[監測點]
+        LitePal.deleteAll(Room.class);
         final String urlApiSys_room = Application.urlSys_room;
-        cloudManager.roomAsync(urlApiSys_room);
+        cloudManager.roomAsync(urlApiSys_room, handler);
 
-        final String urlApiSys_device = Application.urlSys_device;
-        cloudManager.deviceAsync(urlApiSys_device);
-
-
+//        //取得設備
+//        LitePal.deleteAll(Device.class);
+//        final String urlApiSys_device = Application.urlSys_device;
+//        cloudManager.deviceAsync(urlApiSys_device, handler);
 
 
     }
