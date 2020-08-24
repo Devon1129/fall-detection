@@ -16,6 +16,7 @@ import com.example.walabotsmartsecuritydefense.Application;
 import com.example.walabotsmartsecuritydefense.MainActivity;
 import com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity;
 import com.example.walabotsmartsecuritydefense.table.Announcement;
+import com.example.walabotsmartsecuritydefense.table.Notification;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Device;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Room;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Zone;
@@ -33,6 +34,8 @@ import org.litepal.LitePal;
 import java.io.IOException;
 
 import timber.log.Timber;
+
+import static com.example.walabotsmartsecuritydefense.BaseActivity.getPushToken;
 
 public class CloudManager {
     static String TAG = CloudManager.class.getName();
@@ -383,7 +386,6 @@ public class CloudManager {
                             zone.save();
 
                             Message message=new Message();
-
                             String obj = "zoneAsync";
                             message.what=1;
                             message = handler.obtainMessage(1, obj);
@@ -630,4 +632,173 @@ public class CloudManager {
             }
         });
     }
+
+
+
+    //上傳推播token
+    //api/pushtoken.php?username=xhwg85&os=2&pushtoken=xxx
+    //os: 1 iOS; 2 Android
+    public void pushtokenAsync(String url, String username) {
+        preferenceManager.setPushtoken(true);
+        preferenceManager.savePushtoken(true);
+
+        Log.d(TAG, "notification_copyAsync: " + url + username + "&os=2&pushtoken=" + getPushToken());
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url + username + "&os=2&pushtoken=" + getPushToken())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Request request, IOException e) {
+                try {
+                    if (request != null) {
+                        final String myRequest = request.body().toString();
+                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString());
+                    }
+                }catch (Exception exception) {
+                    Log.d(TAG, "exception: " + exception.toString());
+                }
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d(TAG, "myResponse: " + myResponse);
+
+                if (response.isSuccessful()) {//回調的方法執行在子線程。
+
+                    try {
+                        JSONObject json = new JSONObject(myResponse);
+                        String strStatus = json.getString("status");
+                        Log.d(TAG, "strStatus: " + strStatus);
+                        if (strStatus.equals("Success")) {
+
+                            preferenceManager.setPushtoken(true);
+                            preferenceManager.savePushtoken(true);
+
+                            Timber.i("send pushtoken Result Status, send Success");
+                        } else {
+                            preferenceManager.setPushtoken(false);
+                            preferenceManager.savePushtoken(false);
+
+                            Log.d(TAG, "send pushtoken failure!!!");
+                            Timber.i("send pushtoken API Result Status, send Failure");
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+    }
+
+
+    //取得異常通知
+    //api/dump.php?table=notification_copy&username=xxx&apitoken=xxx
+    public void notification_copyAsync(String url, String username) {
+
+        LitePal.deleteAll(Notification.class);
+
+        //apitoken
+        Log.d(TAG, "notification_copyAsync: " + url + "&" + "username=" + username + "&apitoken=" + preferenceManager.getApiToken());
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url + "&" + "username=" + username + "&apitoken=" + preferenceManager.getApiToken())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Request request, IOException e) {
+                try {
+                    if (request != null) {
+                        final String myRequest = request.body().toString();
+                        Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString());
+                    }
+                }catch (Exception exception) {
+                    Log.d(TAG, "exception: " + exception.toString());
+                }
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d(TAG, "myResponse: " + myResponse);
+                if (response.isSuccessful()) {//回調的方法執行在子線程。
+
+                    try {
+
+                        JSONObject json = new JSONObject(myResponse);
+                        String strResult = json.getString("result");
+                        Log.d(TAG, "strStatus: " + strResult);
+
+                        JSONArray array = new JSONArray(strResult);
+
+
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject jsonObject = array.getJSONObject(i);
+                            String id = jsonObject.getString("id"); //serialNumber
+                            String source = jsonObject.getString("source");
+                            String username = jsonObject.getString("username");
+                            String readFlag = jsonObject.getString("readFlag");
+                            String createTime = jsonObject.getString("createTime");
+                            String updateTime = jsonObject.getString("updateTime");
+                            String customerId = jsonObject.getString("customerId");
+                            String roomId = jsonObject.getString("roomId");
+                            String category = jsonObject.getString("category");
+                            String title = jsonObject.getString("title");
+                            String content = jsonObject.getString("content");
+                            String link = jsonObject.getString("link");
+
+                            //hannah_test
+                            Log.d("notification_copyAsync", "id: " + id);
+                            Log.d("notification_copyAsync", "source: " + source);
+                            Log.d("notification_copyAsync", "username: " + username);
+                            Log.d("notification_copyAsync", "readFlag: " + readFlag);
+                            Log.d("notification_copyAsync", "createTime: " + createTime);
+                            Log.d("notification_copyAsync", "updateTime: " + updateTime);
+                            Log.d("notification_copyAsync", "customerId: " + customerId);
+                            Log.d("notification_copyAsync", "roomId: " + roomId);
+                            Log.d("notification_copyAsync", "category: " + category);
+                            Log.d("notification_copyAsync", "title: " + title);
+                            Log.d("notification_copyAsync", "content: " + content);
+                            Log.d("notification_copyAsync", "link: " + link);
+
+
+                            Notification notification = new Notification();
+                            notification.setSerialNumber(id);
+                            notification.setSource(source);
+                            notification.setUsername(username);
+                            notification.setReadFlag(readFlag);
+                            notification.setCreateTime(createTime);
+                            notification.setUpdateTime(updateTime);
+                            notification.setCustomerId(customerId);
+                            notification.setRoomId(roomId);
+                            notification.setCategory(category);
+                            notification.setTitle(title);
+                            notification.setContent(content);
+                            notification.setLink(link);
+                            notification.save();
+
+//                            Message message=new Message();
+//                            String obj = "notification_copyAsync";
+//                            message.what = 3;
+//                            message = handler.obtainMessage(3, obj);
+//                            handler.sendMessage(message);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+
+
 }

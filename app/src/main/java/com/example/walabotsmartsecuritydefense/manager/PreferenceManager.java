@@ -20,10 +20,12 @@ public class PreferenceManager {
     private String mAccount;
     private String mPassword;
     private Boolean mLoginStatus = false;
+    private Boolean mHavePhsuToken = false;
 
 
 
     private SharedPreferences pref;
+    private static final String PREFS_GET_FCM_PUSHTOKEN_RESULT = "get_fcm_pushtoken_result";
     private static final String PREFS_GET_API_TOKEN_RESULT = "get_api_token_result";
     private static final String PREFS_GET_API_LOGIN_RESULT = "get_api_login_result";
     private static final String PREFS_GET_API_LOGIN_NAME = "get_api_login_name";
@@ -168,6 +170,35 @@ public class PreferenceManager {
         Timber.d("setLoginStatus:%s", value);
         String loginStatus = PREFS_GET_API_LOGIN_RESULT;
         pref.edit().putBoolean(loginStatus, value)
+                .apply();
+    }
+
+
+    /*
+        about FCM token
+     */
+    //about FCM token.
+    public boolean getPushtoken() {
+        boolean havePushtoken = pref.getBoolean( PREFS_GET_FCM_PUSHTOKEN_RESULT, mHavePhsuToken);
+        Log.d("PreferenceManager", "get FCM token status: " + havePushtoken);
+
+        return havePushtoken;
+    }
+
+    //儲存FCM token value.
+    public void savePushtoken(boolean value) {
+        String pushtokenValue =  PREFS_GET_FCM_PUSHTOKEN_RESULT;
+        pref.edit().putBoolean(pushtokenValue, value)
+                .apply();
+        mHavePhsuToken = value;
+        Timber.d("savePushtoken:%s", value);
+    }
+
+    //重新進入app時，儲存local端資料
+    public void setPushtoken(boolean value) {
+        Timber.d("setPushtoken:%s", value);
+        String pushtokenValue =  PREFS_GET_FCM_PUSHTOKEN_RESULT;
+        pref.edit().putBoolean(pushtokenValue, value)
                 .apply();
     }
 

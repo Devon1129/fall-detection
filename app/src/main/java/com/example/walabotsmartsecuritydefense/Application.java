@@ -65,6 +65,29 @@ public class Application {
     public static String  urlSys_device = apiEnvironment + "dump.php?table=device&";
 
 
+    /**
+     * 上傳推播token
+     Table: device
+     Usage: http://60.248.34.218/walabot/api/pushtoken.php?username=xxx&os=2&pushtoken=xxx
+     Output1:{"status":"Success"}
+     Output2:
+     */
+    public static String  urlSys_pushtoken = apiEnvironment + "pushtoken.php?username=";
+
+
+    /**
+     * 取得異常通知
+     Table: device
+     Usage: http://60.248.34.218/walabot/api/dump.php?table=notification_copy&username=xxx&apitoken=xxx
+     Output1:{"status":"Success"}
+     Output2:
+     */
+    public static String  urlSys_notification_copy = apiEnvironment + "dump.php?table=notification_copy&";
+
+
+
+
+
 
 
 

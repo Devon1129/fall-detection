@@ -12,6 +12,7 @@ import android.view.View;
 import com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity;
 import com.example.walabotsmartsecuritydefense.broadcastreceivers.FCMMessageingService;
 import com.example.walabotsmartsecuritydefense.manager.PreferenceManager;
+import com.example.walabotsmartsecuritydefense.table.Notification;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Device;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Room;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Zone;
@@ -35,6 +36,7 @@ public class MainActivity extends BaseActivity {
 
     private String apitoken;
     private boolean isLogined = false;
+    private boolean sendPushtoken = false;
 
     static Context mContext;
     private View mBottomNavigation;
@@ -110,6 +112,11 @@ public class MainActivity extends BaseActivity {
         final String urlApiSys_note = Application.urlSys_note;
         cloudManager.sys_noteAsync(urlApiSys_note);
 
+        //取得異常通知
+        LitePal.deleteAll(Notification.class);
+        final String urlApiSys_notification_copy= Application.urlSys_notification_copy;
+        cloudManager.notification_copyAsync(urlApiSys_notification_copy, preferenceManager.getAccount());
+
 
     }
 
@@ -119,6 +126,16 @@ public class MainActivity extends BaseActivity {
             regId = FCMMessageingService.getFcmToken();
             Log.d(TAG, "startFCMService: getPushToken() is empty");
         }else {
+            //如果上傳過，就不用在上傳
+            sendPushtoken = preferenceManager.getPushtoken();
+            Log.d("zzzz", "sendPushtoken: " + sendPushtoken);
+            //to do:sendPushtoken 獲取的狀態不正確
+//            if (!sendPushtoken) {
+//                //上傳推播token
+//                final String urlApiSys_pushtoken = Application.urlSys_pushtoken;
+//                cloudManager.pushtokenAsync(urlApiSys_pushtoken, preferenceManager.getAccount());
+//            }
+
             Log.d(TAG, "startFCMService: regId: " + getPushToken());
         }
 
