@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "999238499630",
+    "firebase_url": "https://smart-security-e6985.firebaseio.com",
+    "project_id": "smart-security-e6985",
+    "storage_bucket": "smart-security-e6985.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:999238499630:android:dedca2cccf55337ebc8ebf",
+        "android_client_info": {
+          "package_name": "com.example.walabotsmartsecuritydefense"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "999238499630-h7d6tgrjcfnjavas43ajfqfec4ort43k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.walabotsmartsecuritydefense",
+            "certificate_hash": "b661a93056f471069564c7f9403a847378033971"
+          }
+        },
+        {
+          "client_id": "999238499630-bt6gt1nb2rlmjtb9dba6rqk127g5eqa8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDop-kjhewGbjVVv3XIX4L-nr-sI9QBubM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "999238499630-bt6gt1nb2rlmjtb9dba6rqk127g5eqa8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "999238499630-8u3bgene6dc1peuf0u6cgob8bdm97der.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.HwaCom.Smart-Security"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

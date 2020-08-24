@@ -3,12 +3,18 @@ package com.example.walabotsmartsecuritydefense;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity;
+import com.example.walabotsmartsecuritydefense.broadcastreceivers.FCMMessageingService;
 import com.example.walabotsmartsecuritydefense.manager.PreferenceManager;
+import com.example.walabotsmartsecuritydefense.table.monitoring.Device;
+import com.example.walabotsmartsecuritydefense.table.monitoring.Room;
+import com.example.walabotsmartsecuritydefense.table.monitoring.Zone;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -54,6 +60,7 @@ public class MainActivity extends BaseActivity {
 
         if (loginStatus) {
             isLogined = true;
+            startFCMService();
         }else {
             isLogined = false;
         }
@@ -102,6 +109,18 @@ public class MainActivity extends BaseActivity {
         //取得訊息佈告
         final String urlApiSys_note = Application.urlSys_note;
         cloudManager.sys_noteAsync(urlApiSys_note);
+
+
+    }
+
+    private void startFCMService() {
+        String regId = "";
+        if(getPushToken().equals("")) {
+            regId = FCMMessageingService.getFcmToken();
+            Log.d(TAG, "startFCMService: getPushToken() is empty");
+        }else {
+            Log.d(TAG, "startFCMService: regId: " + getPushToken());
+        }
 
     }
 
