@@ -210,9 +210,7 @@ public class CloudManager {
 
     //取得訊息佈告
     //api/dump.php?table=sys_note&apitoken=xxx
-    public void sys_noteAsync(String url) {
-
-        LitePal.deleteAll(Announcement.class);
+    public void sys_noteAsync(String url, final Handler handler) {
 
         //apitoken
         Log.d(TAG, "sys_noteAsync: " + url + "&" + "apitoken=" + preferenceManager.getApiToken());
@@ -257,16 +255,16 @@ public class CloudManager {
                             String content = jsonObject.getString("content");
                             String sort = jsonObject.getString("sort");
                             String publishFlag = jsonObject.getString("publishFlag");
-                            String createDate = jsonObject.getString("createDate");
+                            String publishDate = jsonObject.getString("publishDate");
 
 
                             //hannah_test
-                            Log.d("ttttt", "id: " + id);
-                            Log.d("ttttt", "category: " + category);
-                            Log.d("ttttt", "content: " + content);
-                            Log.d("ttttt", "sort: " + sort);
-                            Log.d("ttttt", "publishFlag: " + publishFlag);
-                            Log.d("ttttt", "createDate: " + createDate);
+                            Log.d("sys_noteAsync", "id: " + id);
+                            Log.d("sys_noteAsync", "category: " + category);
+                            Log.d("sys_noteAsync", "content: " + content);
+                            Log.d("sys_noteAsync", "sort: " + sort);
+                            Log.d("sys_noteAsync", "publishFlag: " + publishFlag);
+                            Log.d("sys_noteAsync", "publishDate: " + publishDate);
 
                             Announcement announcement = new Announcement();
                             announcement.setSerialNumber(id);
@@ -274,8 +272,14 @@ public class CloudManager {
                             announcement.setContent(content);
                             announcement.setSort(sort);
                             announcement.setPublishFlag(publishFlag);
-                            announcement.setCreateDate(createDate);
+                            announcement.setPublishDate(publishDate);
                             announcement.save();
+
+                            Message message = new Message();
+                            String obj = "sys_noteAsync";
+                            message.what = 1;
+                            message = handler.obtainMessage(1, obj);
+                            handler.sendMessage(message);
                         }
 
                     } catch (JSONException e) {
@@ -769,7 +773,5 @@ public class CloudManager {
             }
         });
     }
-
-
 
 }

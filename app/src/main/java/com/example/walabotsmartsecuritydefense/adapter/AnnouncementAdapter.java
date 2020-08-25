@@ -24,7 +24,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
         return mAnnouncementList;
     }
 
-    public void setAnnouncementListList(List<Announcement> announcementList) {
+    public void setAnnouncementList(List<Announcement> announcementList) {
         this.mAnnouncementList = announcementList;
     }
 
@@ -40,7 +40,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter<AnnouncementAdapte
     @Override
     public void onBindViewHolder(@NonNull final AnnouncementAdapter.ViewHolder holder, final int position) {
         Announcement announcement = mAnnouncementList.get(position);
-        holder.createDate.setText(announcement.getCreateDate());
+        holder.createDate.setText(announcement.getPublishDate());
         holder.Content.setText(announcement.getContent());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

@@ -4,18 +4,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,7 +27,6 @@ import com.example.walabotsmartsecuritydefense.table.Announcement;
 
 import org.litepal.LitePal;
 
-import java.io.IOException;
 import java.util.List;
 
 public class MessageAnnouncementFragment extends Fragment {
@@ -39,11 +36,25 @@ public class MessageAnnouncementFragment extends Fragment {
     private MessageAnnouncementViewModel announcementViewModel;
 
     private RecyclerView announcementList;
-    private AnnouncementAdapter announcement_adapter;
+    private AnnouncementAdapter announcementAdapter;
 
     protected CloudManager cloudManager;
     private List<Announcement> announcements;
 
+    Handler handler = new Handler(Looper.myLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch(msg.what){ //sys_noteAsync
+                case 1:
+                    BindData(announcementList);
+                    break;
+            }
+            Log.d( "MainActivity", "handler: case" );
+        }
+    };
+
+    @SuppressWarnings("unchecked")
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +66,6 @@ public class MessageAnnouncementFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_message_announcement, container, false);
         initial(root);
-
 
         return root;
     }
@@ -87,19 +97,21 @@ public class MessageAnnouncementFragment extends Fragment {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         announcementList.setLayoutManager(layoutManager);
-        announcement_adapter = new AnnouncementAdapter();
-//        ListAdapter(getActivity(), this);
-        BindData(announcementList);
+        announcementAdapter = new AnnouncementAdapter();
+
+        //取得訊息佈告
+        LitePal.deleteAll(Announcement.class);
+        final String urlApiSys_note = Application.urlSys_note;
+        cloudManager.sys_noteAsync(urlApiSys_note, handler);
 
         //點擊訊息佈告項目
-        announcement_adapter.setOnItemClickListener(new AnnouncementAdapter.OnItemClickListener() {
+        announcementAdapter.setOnItemClickListener(new AnnouncementAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int pos) {
                 Log.d(TAG, "onItemClick pos " + pos);
 
                 Intent intent = new Intent();
                 intent.setClass(getActivity(), AnnouncementContentActivity.class);
-
 
                 Announcement announcementInfo = announcements.get(pos);
                 int id = announcementInfo.getId();
@@ -109,12 +121,6 @@ public class MessageAnnouncementFragment extends Fragment {
                 String serialNumber = announcementInfo.getSerialNumber();
 
                 Log.d(TAG, "onItemClick serialNumber: " + serialNumber);
-
-                //hannah_test
-//                Log.d("LitePal", "id " + announcementInfo.getId());
-//                Log.d("LitePal", "createDate. " + announcementInfo.getCreateDate());
-//                Log.d("LitePal", "sort. " + announcementInfo.getSort());
-
                 //Toast.makeText(getContext(), "SerialNumber: " + announcementInfo.getSerialNumber() + "; pos: " + pos, Toast.LENGTH_SHORT).show();
 
                 Bundle bundle = new Bundle();
@@ -124,12 +130,6 @@ public class MessageAnnouncementFragment extends Fragment {
             }
         });
 
-
-        //放置MainActivity呼叫，這個會來不及儲存資料
-        //取得訊息佈告
-//        final String urlApiSys_note = Application.urlSys_note;
-//        cloudManager.sys_noteAsync(urlApiSys_note);
-
         List<Announcement> announcement = LitePal.findAll(Announcement.class);
 
         //hannah_test
@@ -137,7 +137,7 @@ public class MessageAnnouncementFragment extends Fragment {
             Log.d("LitePal", "announcements serialNumber is " + announcements.getSerialNumber());
             Log.d("LitePal", "announcements content is " + announcements.getContent());
             Log.d("LitePal", "announcements category is " + announcements.getCategory());
-            Log.d("LitePal", "announcements createDate is " + announcements.getCreateDate());
+            Log.d("LitePal", "announcements createDate is " + announcements.getPublishDate());
             Log.d("LitePal", "announcements id is " + announcements.getId());
             Log.d("LitePal", "announcements publishFlag is " + announcements.getPublishFlag());
             Log.d("LitePal", "announcements sort is " + announcements.getSort());
@@ -151,7 +151,7 @@ public class MessageAnnouncementFragment extends Fragment {
         //List list = LitePal.findAll(Caregivers.class);
         List list = LitePal.order("id asc").find(Announcement.class);
         //List list = LitePal.order("id desc").find(Caregivers.class);
-        announcement_adapter.setAnnouncementListList(list);
-        view.setAdapter(announcement_adapter);
+        announcementAdapter.setAnnouncementList(list);
+        view.setAdapter(announcementAdapter);
     }
 }

@@ -101,10 +101,10 @@ public class AccountFragment extends Fragment {
         String manufacturer = Build.MANUFACTURER;
         String model = Build.MODEL;
         if (model.startsWith(manufacturer)) {
-            Log.d(TAG, capitalize(model) + "~~~");
+            Log.d(TAG, capitalize(model));
             return capitalize(model);
         } else {
-            Log.d(TAG, capitalize(manufacturer) + " " + model + "~~~");
+            Log.d(TAG, capitalize(manufacturer) + " " + model);
             return capitalize(manufacturer) + " " + model;
         }
     }
@@ -114,7 +114,7 @@ public class AccountFragment extends Fragment {
         //app版號
         String versionName = BuildConfig.VERSION_NAME;
         //Log.d(TAG, "version: " + versionCode);
-        Log.d(TAG, "versionName: " + versionName + "~~~");
+        Log.d(TAG, "versionName: " + versionName);
 
 
         //android 手機，作業系統版號

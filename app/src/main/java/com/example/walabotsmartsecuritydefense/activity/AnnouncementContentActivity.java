@@ -41,18 +41,18 @@ public class AnnouncementContentActivity extends AppCompatActivity {
 
         Log.d(TAG, "serialNumber " + serialNumber);
 
-        //查詢指定的序列號相關內容
+        //查詢指定序列號(serialnumber)的相關欄位(content、createdate)
         if (serialNumber == null | serialNumber.matches("")) {
             createDate.setText("");
             content.setText("查無資料");
         }else {
             List<Announcement> announcementList =
-                    LitePal.select( "content", "createdate").where("serialnumber = ?", serialNumber).find(Announcement.class);
+                    LitePal.select( "content", "publishdate").where("serialnumber=?", serialNumber).find(Announcement.class);
 
             Log.d(TAG, "announcementList.size(): " + announcementList.size());
 
             String announcementContent = announcementList.get(0).getContent();
-            String announcementCreateDate = announcementList.get(0).getCreateDate();
+            String announcementCreateDate = announcementList.get(0).getPublishDate();
 
             createDate.setText(announcementCreateDate);
             content.setText(announcementContent);

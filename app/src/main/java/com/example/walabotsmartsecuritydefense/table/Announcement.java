@@ -9,7 +9,8 @@ public class Announcement extends LitePalSupport {
     private String content;
     private String sort;
     private String publishFlag;
-    private String createDate;
+    private String publishDate;
+
 
 
     public int getId() {
@@ -60,11 +61,11 @@ public class Announcement extends LitePalSupport {
         this.publishFlag = publish_flag;
     }
 
-    public String getCreateDate() {
-        return createDate;
+    public String getPublishDate() {
+        return publishDate;
     }
 
-    public void setCreateDate(String create_date) {
-        this.createDate = create_date;
+    public void setPublishDate(String publishDate) {
+        this.publishDate = publishDate;
     }
 }
