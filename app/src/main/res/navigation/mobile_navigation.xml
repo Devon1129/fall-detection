@@ -11,11 +11,11 @@
         android:label="@string/title_monitoring"
         tools:layout="@layout/fragment_monitoring" />
 
-    <fragment
-        android:id="@+id/navigation_history"
-        android:name="com.example.walabotsmartsecuritydefense.ui.history.HistoricalRecordFragment"
-        android:label="@string/title_history"
-        tools:layout="@layout/fragment_historical_record" />
+<!--    <fragment-->
+<!--        android:id="@+id/navigation_history"-->
+<!--        android:name="com.example.walabotsmartsecuritydefense.ui.history.HistoricalRecordFragment"-->
+<!--        android:label="@string/title_history"-->
+<!--        tools:layout="@layout/fragment_historical_record" />-->
 
     <fragment
         android:id="@+id/navigation_notifications"

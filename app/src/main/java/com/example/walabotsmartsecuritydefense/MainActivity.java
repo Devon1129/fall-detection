@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
@@ -12,6 +13,7 @@ import android.view.View;
 import com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity;
 import com.example.walabotsmartsecuritydefense.broadcastreceivers.FCMMessageingService;
 import com.example.walabotsmartsecuritydefense.manager.PreferenceManager;
+import com.example.walabotsmartsecuritydefense.table.Announcement;
 import com.example.walabotsmartsecuritydefense.table.Notification;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Device;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Room;
@@ -55,7 +57,7 @@ public class MainActivity extends BaseActivity {
         preferenceManager = new PreferenceManager(this);
 
         //獲取登入狀態
-        boolean loginStatus = false;
+        boolean loginStatus;
         loginStatus = preferenceManager.getLoginStatus();
         preferenceManager.setLoginStatus(loginStatus);
         Log.d(TAG, "loginStatus: " + loginStatus);
@@ -74,7 +76,7 @@ public class MainActivity extends BaseActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_monitoring , R.id.navigation_history, R.id.navigation_notifications,
+                R.id.navigation_monitoring, R.id.navigation_notifications,
                 R.id.navigation_announcement, R.id.navigation_account)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -106,11 +108,6 @@ public class MainActivity extends BaseActivity {
         if (leaveAnnouncementContent != null) {
             navView.setSelectedItemId(R.id.navigation_announcement);
         }
-
-
-        //取得訊息佈告
-        final String urlApiSys_note = Application.urlSys_note;
-        cloudManager.sys_noteAsync(urlApiSys_note);
 
         //取得異常通知
         LitePal.deleteAll(Notification.class);
