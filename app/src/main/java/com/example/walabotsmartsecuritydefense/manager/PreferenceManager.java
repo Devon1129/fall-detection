@@ -134,7 +134,7 @@ public class PreferenceManager {
         pref.edit().putString(userName, name)
                 .apply();
         mUserName = name;
-        Timber.d("saveLoginStatus:%s", name);
+        Timber.d("saveUserName:%s", name);
     }
 
     //重新進入app時，儲存local端資料
@@ -168,6 +168,7 @@ public class PreferenceManager {
     //重新進入app時，儲存local端資料
     public void setLoginStatus(boolean value) {
         Timber.d("setLoginStatus:%s", value);
+
         String loginStatus = PREFS_GET_API_LOGIN_RESULT;
         pref.edit().putBoolean(loginStatus, value)
                 .apply();

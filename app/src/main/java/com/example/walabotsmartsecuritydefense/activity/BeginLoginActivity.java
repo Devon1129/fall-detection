@@ -2,6 +2,9 @@ package com.example.walabotsmartsecuritydefense.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -9,25 +12,14 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.walabotsmartsecuritydefense.Application;
 import com.example.walabotsmartsecuritydefense.BaseActivity;
 import com.example.walabotsmartsecuritydefense.MainActivity;
 import com.example.walabotsmartsecuritydefense.R;
 import com.example.walabotsmartsecuritydefense.manager.PreferenceManager;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.litepal.LitePal;
-
-import java.io.IOException;
-
-import timber.log.Timber;
 
 public class BeginLoginActivity extends BaseActivity {
 
@@ -37,7 +29,29 @@ public class BeginLoginActivity extends BaseActivity {
     private Button mBeginLogin;
     private EditText mAccount, mPassword;
 
-    private boolean isLogin = true;
+    Handler handler = new Handler(Looper.myLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+
+            switch(msg.what){ //signinAsync
+                case 1:
+                    Log.d( "BeginLogin", "handler: case 1" );
+                    Intent intent = new Intent(BeginLoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                    break;
+
+                case 2:
+                    Log.d( "BeginLogin", "handler: case 2" );
+
+                    Toast.makeText(BeginLoginActivity.this,"帳密錯誤", Toast.LENGTH_LONG).show();
+                    break;
+            }
+            Log.d( "BeginLogin", "handler: case" );
+
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,9 +65,6 @@ public class BeginLoginActivity extends BaseActivity {
         mBeginLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
-                //hannah_test
-                ///Log.d("tttt", mAccount.getText().toString());
-                ///Log.d("tttt", mPassword.getText().toString());
                 LitePal.getDatabase();//建立資料庫
 
                 ///判斷欄位是否為空
@@ -69,42 +80,16 @@ public class BeginLoginActivity extends BaseActivity {
     //                        Application.urlSignin + "username=" + account + "&" + "password=" + password;//hannah_test
     //                        Application.urlSignin + "username=" + "xhwg85" + "&" + "password=" + "hwacom";//hannah_test
 
-                    //hannah_test
-                    //account = "xhwg85";
-                    //password = "hwacom";
-
                     //to do:sharepreference save account&password
-                    Log.d(TAG, "account: " + account + "; " + "password: " + password + "~~~");
+                    Log.d(TAG, "account: " + account + "; " + "password: " + password);
 
-                    //hannah_test
-//                    boolean getApiLogin = cloudManager.getApitokenAsync(urlApiSignin, account, password);
-                    cloudManager.getApitokenAsync(urlApiSignin, account, password);
+
+                    cloudManager.signinAsync(urlApiSignin, account, password, handler);
                     preferenceManager.saveAccount(account);
                     preferenceManager.savePassword(password);
 
-//                    Log.d("ttttt", "getApiLogin: " + getApiLogin);
-//
-//                    if (!getApiLogin) {
-//                        Toast.makeText(BeginLoginActivity.this,"登入失敗", Toast.LENGTH_LONG).show();
-//                    }
-
-    //                String apitoken = preferenceManager.getApiToken();
-    //                if (apitoken.equals("") | apitoken != null) {
-    //                    cloudManager.getApitokenAsync(urlApiSignin, account, password);
-    ////                    getApitokenAsync();//hannah_test
-    //                }else {
-    //
-    //                }
-    //
-                    Log.d(TAG, "isLogin: " + isLogin + "~~~");
                     boolean isLogin = preferenceManager.getLoginStatus();
-                    if (isLogin) {
-                        Intent intent = new Intent(BeginLoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }else {
-                        //Toast.makeText(BeginLoginActivity.this,"查無此帳號", Toast.LENGTH_LONG).show();
-                    }
+                    Log.d(TAG, "isLogin: " + isLogin);
                 }
             }
         });

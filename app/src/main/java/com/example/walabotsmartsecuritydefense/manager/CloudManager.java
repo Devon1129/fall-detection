@@ -56,15 +56,15 @@ public class CloudManager {
     }
 
     //登入
-    //private void getApitokenAsync() {//hannah_test
-    public void getApitokenAsync(String url, String username, String password) {
-        Log.d(TAG, "getApitokenAsync: " + url + "username=" + username + "&" + "password=" + password);
+    //api/signin.php?username&password
+    public void signinAsync(String url, String username, String password, final Handler handler) {
+        Log.d(TAG, "signinAsync: " + url + "username=" + username + "&" + "password=" + password);
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url + "username=" + username + "&" + "password=" + password)
-//                .url("http://60.248.34.228:81/walabot/api/signin.php?username=xhwg85&password=hwacom")//hannah_test
                 .build();
+
         client.newCall(request).enqueue(new Callback() {
 
             @Override
@@ -72,6 +72,16 @@ public class CloudManager {
                 try {
                     if (request != null) {
                         final String myRequest = request.body().toString();
+
+                        preferenceManager.setLoginStatus(false);
+                        preferenceManager.saveLoginStatus(false);
+
+                        Message message = new Message();
+                        String obj = "loginError";
+                        message.what = 2;
+                        message = handler.obtainMessage(2, obj);
+                        handler.sendMessage(message);
+
                         Log.d(TAG, "onFailure " + myRequest + " ; " + e.toString());
                     }
                 }catch (Exception exception) {
@@ -95,29 +105,35 @@ public class CloudManager {
                             String getShool = json.getString("customerId");
                             String getRole = json.getString("role");
 
-
-                            Log.d(TAG, "getApitokenAsync(): api token " + getApiToken);
+                            Log.d(TAG, "signinAsync(): api token " + getApiToken);
+                            preferenceManager.setApiTokenResult(getApiToken);
                             preferenceManager.saveApiToken(getApiToken);
+
+                            preferenceManager.setLoginStatus(true);
                             preferenceManager.saveLoginStatus(true);
 
                             preferenceManager.saveUserName(getName);
                             preferenceManager.saveShoolName(getShool);
                             preferenceManager.saveRoleName(getRole);
 
-                            //範例
-                            //mAccount.setText(json.getJSONObject("data").getString("first_name")+ " "+json.getJSONObject("data").getString("last_name"));
-                            //mAccount.setText(apiToken);//hannah_test
+                            Message message = new Message();
+                            String obj = "signinAsync";
+                            message.what = 1;
+                            message = handler.obtainMessage(1, obj);
+                            handler.sendMessage(message);
 
                             Timber.i("Signin API Result Status, Signin Success");
-
-//                            Intent intent = new Intent(BeginLoginActivity.this, MainActivity.class);
-//                            intent.putExtra("isLogin", isLogin);
-//                            startActivity(intent);
-//                            finish();
-
                         } else {
-                            Log.d(TAG, "signin failure!!!");
+                            preferenceManager.setLoginStatus(false);
+                            preferenceManager.saveLoginStatus(false);
 
+                            Message message = new Message();
+                            String obj = "loginError";
+                            message.what = 2;
+                            message = handler.obtainMessage(2, obj);
+                            handler.sendMessage(message);
+
+                            Log.d(TAG, "signin failure!!!");
                             Timber.i("Signin API Result Status, Signin Failure");
                         }
 
@@ -125,51 +141,6 @@ public class CloudManager {
                         e.printStackTrace();
                     }
                 }
-
-
-
-
-
-
-
-
-
-//                if (response.isSuccessful()) {//回調的方法執行在子線程。
-//                    BeginLoginActivity.this.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            try {
-//                                JSONObject json = new JSONObject(myResponse);
-//                                String strStatus = json.getString("status");
-//                                Log.d("tttt", "strStatus: " + strStatus);
-//                                if (strStatus.equals("Success")) {
-//                                    String apiToken = json.getString("apitoken");
-//
-//                                    Log.d("tttt", "apiToken: " + apiToken);
-//                                    //範例
-//                                    //mAccount.setText(json.getJSONObject("data").getString("first_name")+ " "+json.getJSONObject("data").getString("last_name"));
-//                                    //mAccount.setText(apiToken);//hannah_test
-//
-//                                    Timber.i("Signin API Result Status, Signin Success");
-//
-//                                    Intent intent = new Intent(BeginLoginActivity.this, MainActivity.class);
-//                                    intent.putExtra("isLogin", isLogin);
-//                                    startActivity(intent);
-//                                    finish();
-//                                } else {
-//                                    Log.d("tttt", "signin failure!!!");
-//
-//                                    Timber.i("Signin API Result Status, Signin Failure");
-//
-//                                    Toast.makeText(BeginLoginActivity.this, "登入失敗，無效帳戶或密碼", Toast.LENGTH_LONG).show();
-//                                }
-//
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    });
-//                }
             }
         });
     }
