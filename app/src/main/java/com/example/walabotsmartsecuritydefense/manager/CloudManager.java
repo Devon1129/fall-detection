@@ -2,6 +2,7 @@ package com.example.walabotsmartsecuritydefense.manager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -18,9 +20,15 @@ import com.example.walabotsmartsecuritydefense.activity.BeginLoginActivity;
 import com.example.walabotsmartsecuritydefense.table.Announcement;
 import com.example.walabotsmartsecuritydefense.table.Notification;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Device;
+import com.example.walabotsmartsecuritydefense.table.monitoring.MonitoringPointStatus;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Room;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Zone;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -31,7 +39,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.litepal.LitePal;
 
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.util.Iterator;
 
 import timber.log.Timber;
 
@@ -774,4 +786,163 @@ public class CloudManager {
         });
     }
 
+    //即時監測
+    //api/status.php?apitoken=xxx
+    public void statusAsync(String url, final Handler handler){
+        LitePal.deleteAll(MonitoringPointStatus.class);
+
+        //apitoken
+        Log.d(TAG, "statusAsync: " + url + "apitoken=" + preferenceManager.getApiToken());
+
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url + "apitoken=" + preferenceManager.getApiToken())
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Request request, IOException e) {
+                try {
+                    if (request != null) {
+                        final String myRequest = request.body().toString();
+
+                        Log.d(TAG, "onFailure " + "statusAsync: " + myRequest + " ; " + e.toString());
+                    }
+                }catch (Exception exception) {
+                    Log.d(TAG, "exception: " + "statusAsync: " + exception.toString());
+                }
+            }
+
+
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+            @Override
+            public void onResponse(Response response) throws IOException {
+                final String myResponse = response.body().string();
+                Log.d(TAG, "myResponse: " + "statusAsync: " + myResponse);
+                if (response.isSuccessful()) {//回調的方法執行在子線程。
+
+                    //no1:第一筆資料
+                    //Gson parser response.
+                    JsonParser jsonParser = new JsonParser();
+                    JsonElement jsonElement = jsonParser.parse(myResponse);
+
+                    //get array:rooms
+                    JsonObject jsonObject = jsonElement.getAsJsonObject();
+                    String name = jsonObject.get("result").getAsString();
+                    JsonArray roomsJsonArray = jsonObject.get("rooms").getAsJsonArray();
+
+                    Log.d("statusAsync", "name: " + name);
+                    Log.d("statusAsync", "roomsJsonArray: " + roomsJsonArray);
+                    Log.d("statusAsync", "roomsJsonArray 00: " + roomsJsonArray.get(0));
+
+                    //Gson parser roomsJsonArray.
+                    JsonParser jsonParser1 = new JsonParser();
+                    JsonElement jsonElement1 = jsonParser1.parse(String.valueOf(roomsJsonArray.get(0)));
+
+                    //get object:rooms
+                    JsonObject jsonObject1 = jsonElement1.getAsJsonObject();
+                    String zoneName = jsonObject1.get("zoneName").getAsString();
+                    String roomId = jsonObject1.get("roomId").getAsString();
+                    String roomNumber = jsonObject1.get("roomNumber").getAsString();
+                    Log.d("ggggg2", "zoneName: " + zoneName);//no1
+                    Log.d("ggggg2", "roomId: " + roomId);//no1
+                    Log.d("ggggg2", "roomNumber: " + roomNumber);//no1
+
+                    //get array:devices
+                    JsonArray roomsJsonArray1 = jsonObject1.get("devices").getAsJsonArray();
+                    String devices1 =  roomsJsonArray1.get(0).toString();
+
+                    //Gson parser devices.
+                    JsonParser jsonParser2 = new JsonParser();
+                    JsonElement jsonElement2 = jsonParser2.parse(devices1);
+
+                    //get object:devices
+                    JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
+                    String deviceId = jsonObject2.get("deviceId").getAsString();
+                    String deviceType = jsonObject2.get("deviceType").getAsString();
+                    String connectFlag = jsonObject2.get("connectFlag").getAsString();
+                    String presence = jsonObject2.get("presence").getAsString();
+                    String datetime = jsonObject2.get("datetime").getAsString();
+                    Log.d("ggggg2-1", "deviceId: " + deviceId);//no1
+                    Log.d("ggggg2-1", "deviceType: " + deviceType);//no1
+                    Log.d("ggggg2-1", "connectFlag: " + connectFlag);//no1
+                    Log.d("ggggg2-1", "presence: " + presence);//no1
+                    Log.d("ggggg2-1", "datetime: " + datetime);//no1
+
+                    //save db.
+                    MonitoringPointStatus monitoringPointStatus = new MonitoringPointStatus();
+                    monitoringPointStatus.setZoneName(zoneName);
+                    monitoringPointStatus.setRoomId(roomId);
+                    monitoringPointStatus.setRoomNumber(roomNumber);
+                    monitoringPointStatus.setDeviceId(deviceId);
+                    monitoringPointStatus.setDeviceType(deviceType);
+                    monitoringPointStatus.setConnectFlag(connectFlag);
+                    monitoringPointStatus.setPresence(presence);
+                    monitoringPointStatus.setDatetime(datetime);
+                    monitoringPointStatus.save();
+
+
+                    //no2:第一筆資料之後的資料集
+                    Iterator<JsonElement> iterator = roomsJsonArray.iterator();
+                    while(iterator.hasNext()) {
+                        System.out.println(iterator.next());
+                        Log.d("statusAsync", "iterator.next(): " + iterator.next());
+
+                        //Gson parser roomsJsonArray.
+                        JsonParser jsonParser3 = new JsonParser();
+                        JsonElement jsonElement3 = jsonParser3.parse(String.valueOf(iterator.next()));
+
+                        JsonObject jsonObject3 = jsonElement3.getAsJsonObject();
+                        String zoneName2 = jsonObject3.get("zoneName").getAsString();
+                        String roomId2 = jsonObject3.get("roomId").getAsString();
+                        String roomNumber2 = jsonObject3.get("roomNumber").getAsString();
+                        Log.d("ggggg2-1", "zoneName2: " + zoneName2);//no2
+                        Log.d("ggggg2-1", "roomId2: " + roomId2);//no2
+                        Log.d("ggggg2-1", "roomNumber2: " + roomNumber2);//no2
+
+                        //get array:devices
+                        JsonArray roomsJsonArray2 = jsonObject3.get("devices").getAsJsonArray();
+                        String devices2 = roomsJsonArray2.get(0).toString();
+
+                        //Gson parser devices.
+                        JsonParser jsonParser4 = new JsonParser();
+                        JsonElement jsonElement4 = jsonParser4.parse(devices2);
+
+                        //get object:devices
+                        JsonObject jsonObject4 = jsonElement4.getAsJsonObject();
+                        String deviceId2 = jsonObject4.get("deviceId").getAsString();
+                        String deviceType2 = jsonObject4.get("deviceType").getAsString();
+                        String connectFlag2 = jsonObject4.get("connectFlag").getAsString();
+                        String presence2 = jsonObject4.get("presence").getAsString();
+                        String datetime2 = jsonObject4.get("datetime").getAsString();
+                        Log.d("ggggg2-3", "deviceId2: " + deviceId2);//no2
+                        Log.d("ggggg2-3", "deviceType: " + deviceType2);//no2
+                        Log.d("ggggg2-3", "connectFlag: " + connectFlag2);//no2
+                        Log.d("ggggg2-3", "presence: " + presence2);//no2
+                        Log.d("ggggg2-3", "datetime: " + datetime2);//no2
+
+                        //save db.
+                        MonitoringPointStatus monitoringPointStatus2 = new MonitoringPointStatus();
+                        monitoringPointStatus2.setZoneName(zoneName2);
+                        monitoringPointStatus2.setRoomId(roomId2);
+                        monitoringPointStatus2.setRoomNumber(roomNumber2);
+                        monitoringPointStatus2.setDeviceId(deviceId2);
+                        monitoringPointStatus2.setDeviceType(deviceType2);
+                        monitoringPointStatus2.setConnectFlag(connectFlag2);
+                        monitoringPointStatus2.setPresence(presence2);
+                        monitoringPointStatus2.setDatetime(datetime2);
+                        monitoringPointStatus2.save();
+                    }
+                        Message message=new Message();
+                        String obj = "statusAsync";
+                        message.what = 3;
+                        message = handler.obtainMessage(3, obj);
+                        handler.sendMessage(message);
+
+                }
+
+            }
+
+        });
+    }
 }

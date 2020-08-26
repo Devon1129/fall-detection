@@ -86,6 +86,21 @@ public class Application {
 
 
 
+    /**
+     * 即時狀態:
+     Table: user
+     Usage: http://60.248.34.228:81/walabot/api/api/status.php?apitoken=xxx
+     Output1:
+     Output2:
+     */
+    public static String urlSys_status = apiEnvironment + "status.php?";
+
+
+
+
+
+
+
 
 
 

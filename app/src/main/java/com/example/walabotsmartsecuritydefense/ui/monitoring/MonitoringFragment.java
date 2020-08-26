@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,12 +25,18 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.walabotsmartsecuritydefense.Application;
 import com.example.walabotsmartsecuritydefense.ExpandableListRoomDataPump;
 import com.example.walabotsmartsecuritydefense.R;
+import com.example.walabotsmartsecuritydefense.adapter.MonitoringExpandableListAdapter;
 import com.example.walabotsmartsecuritydefense.adapter.RoomExpandableListAdapter;
+import com.example.walabotsmartsecuritydefense.group.Child;
+import com.example.walabotsmartsecuritydefense.group.Parent;
 import com.example.walabotsmartsecuritydefense.manager.CloudManager;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Device;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Room;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Zone;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.litepal.LitePal;
 
 import java.util.ArrayList;
@@ -48,8 +55,7 @@ public class MonitoringFragment extends Fragment {
     HashMap<String, List<String>> expandableListDetail;
 
 
-
-    Handler handler = new Handler() {
+    Handler handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -68,11 +74,15 @@ public class MonitoringFragment extends Fragment {
                     expandableListView.setAdapter(expandableListAdapter);
                     setListViewHeightBasedOnChildren(expandableListView);
                     break;
+                case 3: //statusAsync
+
+                    break;
             }
             Log.d( "MoniotringF", "handler: case" );
 
         }
     };
+
 
 
 
@@ -87,6 +97,7 @@ public class MonitoringFragment extends Fragment {
         //hannah_test
         //new MyAsyncTask().execute(urlApiSys_zone);
     }
+
 
 
     //hannah_test
@@ -116,31 +127,31 @@ public class MonitoringFragment extends Fragment {
 //        expandableListView.setAdapter(expandableListAdapter);
 //        setListViewHeightBasedOnChildren(expandableListView);
 
-        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-
-            @Override
-            public void onGroupExpand(int groupPosition) {
+//        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+//
+//            @Override
+//            public void onGroupExpand(int groupPosition) {
 //                Toast.makeText(getContext(),
 //                        expandableListTitle.get(groupPosition) + " List Expanded.",
 //                        Toast.LENGTH_SHORT).show();
-            }
-        });
+//            }
+//        });
 
-        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+//        expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
 
-            @Override
-            public void onGroupCollapse(int groupPosition) {
+//            @Override
+//            public void onGroupCollapse(int groupPosition) {
 //                Toast.makeText(getContext(),
 //                        expandableListTitle.get(groupPosition) + " List Collapsed.",
 //                        Toast.LENGTH_SHORT).show();
-            }
-        });
+//            }
+//        });
 
 
-        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v,
-                                        int groupPosition, int childPosition, long id) {
+//        expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+//            @Override
+//            public boolean onChildClick(ExpandableListView parent, View v,
+//                                        int groupPosition, int childPosition, long id) {
 //                Toast.makeText(
 //                        getContext(),
 //                        expandableListTitle.get(groupPosition)
@@ -155,9 +166,9 @@ public class MonitoringFragment extends Fragment {
 //                intent.setClass(getContext(), HistoryDetailActivity.class);
 //                intent.putExtra("historyID", childPosition);
 //                startActivity(intent);
-                return false;
-            }
-        });
+//                return false;
+//            }
+//        });
 
 
 
@@ -186,13 +197,18 @@ public class MonitoringFragment extends Fragment {
         Log.d("MoniotringF", "onResume");
 
 //        final String urlApiSignin = Application.urlSignin;
-//        cloudManager.getApitokenAsync(urlApiSignin, "xhwg85", "hwacom2020");
+//        cloudManager.signinAsync(urlApiSignin, "xhwg85", "hwacom2020");
+
+
+        //即時監測
+        final String urlApiSys_status = Application.urlSys_status;
+        cloudManager.statusAsync(urlApiSys_status,handler);
 
         //取得區域
         LitePal.deleteAll(Zone.class);
         final String urlApiSys_zone = Application.urlSys_zone;
         cloudManager.zoneAsync(urlApiSys_zone, handler);
-
+//
         //取得設施[監測點]
         LitePal.deleteAll(Room.class);
         final String urlApiSys_room = Application.urlSys_room;
