@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/navigation_monitoring"
-        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:icon="@drawable/nav_monitoring"
         android:title="@string/title_monitoring" />
 
 <!--    <item-->
@@ -13,17 +13,17 @@
 
     <item
         android:id="@+id/navigation_notifications"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/nav_notifications"
         android:title="@string/title_notifications" />
 
     <item
         android:id="@+id/navigation_announcement"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/nav_announcement"
         android:title="@string/title_announcement" />
 
     <item
         android:id="@+id/navigation_account"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@drawable/ic_account"
         android:title="@string/title_account" />
 
 </menu>

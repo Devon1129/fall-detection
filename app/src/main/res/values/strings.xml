@@ -3,8 +3,8 @@
     <string name="title_history">歷史紀錄</string>
     <string name="title_monitoring">即時監測</string>
     <string name="title_notifications">異常通知</string>
-    <string name="title_announcement">訊息佈告</string>
-    <string name="title_account">帳戶</string>
+    <string name="title_announcement">系統佈告</string>
+    <string name="title_account">帳戶資訊</string>
 
     <string name="btn_begin_login">登入</string>
     <string name="account_login">帳號: </string>
