@@ -44,6 +44,7 @@ public class MainActivity extends BaseActivity {
     private View mBottomNavigation;
     private BottomNavigationView navView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +81,7 @@ public class MainActivity extends BaseActivity {
                 R.id.navigation_announcement, R.id.navigation_account)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
     }
 
@@ -113,7 +114,6 @@ public class MainActivity extends BaseActivity {
         LitePal.deleteAll(Notification.class);
         final String urlApiSys_notification_copy= Application.urlSys_notification_copy;
         cloudManager.notification_copyAsync(urlApiSys_notification_copy, preferenceManager.getAccount());
-
 
     }
 
