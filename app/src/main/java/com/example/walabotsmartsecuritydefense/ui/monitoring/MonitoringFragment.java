@@ -31,6 +31,7 @@ import com.example.walabotsmartsecuritydefense.group.Child;
 import com.example.walabotsmartsecuritydefense.group.Parent;
 import com.example.walabotsmartsecuritydefense.manager.CloudManager;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Device;
+import com.example.walabotsmartsecuritydefense.table.monitoring.MonitoringPointStatus;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Room;
 import com.example.walabotsmartsecuritydefense.table.monitoring.Zone;
 
@@ -55,35 +56,99 @@ public class MonitoringFragment extends Fragment {
     HashMap<String, List<String>> expandableListDetail;
 
 
+    ArrayList<Parent> groups;
+    ExpandableListView listView;
+    MonitoringExpandableListAdapter adapter;
+//    List<String> expandableListTitle;
+//    HashMap<String, List<String>> expandableListDetail;
+
+
     Handler handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch(msg.what){ //zoneAsync
                 case 1:
-                    expandableListDetail = ExpandableListRoomDataPump.getData();
-                    expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
-                    expandableListAdapter = new RoomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
-                    expandableListView.setAdapter(expandableListAdapter);
-                    setListViewHeightBasedOnChildren(expandableListView);
+//                    expandableListDetail = ExpandableListRoomDataPump.getData();
+//                    expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
+//                    expandableListAdapter = new RoomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
+//                    expandableListView.setAdapter(expandableListAdapter);
+//                    setListViewHeightBasedOnChildren(expandableListView);
                     break;
                 case 2: //roomAsync
-                    expandableListDetail = ExpandableListRoomDataPump.getData();
-                    expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
-                    expandableListAdapter = new RoomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
-                    expandableListView.setAdapter(expandableListAdapter);
-                    setListViewHeightBasedOnChildren(expandableListView);
+//                    expandableListDetail = ExpandableListRoomDataPump.getData();
+//                    expandableListTitle = new ArrayList<String>(expandableListDetail.keySet());
+//                    expandableListAdapter = new RoomExpandableListAdapter(getContext(), expandableListTitle, expandableListDetail);
+//                    expandableListView.setAdapter(expandableListAdapter);
+//                    setListViewHeightBasedOnChildren(expandableListView);
                     break;
                 case 3: //statusAsync
+                    groups = new ArrayList<Parent>();
 
+                    List<MonitoringPointStatus> monitoringPointStatuses = LitePal.findAll(MonitoringPointStatus.class);
+                    Log.d("MoniotringF", "monitoringPointStatuses size: " + monitoringPointStatuses.size());
+
+                    String nextZName = "";
+                    for (MonitoringPointStatus mPS : monitoringPointStatuses) {
+                        String roomId = mPS.getRoomId();
+                        String zoneName = mPS.getZoneName();
+                        String deviceId = mPS.getDeviceId();
+                        String roomNumber = mPS.getRoomNumber();
+                        String connectFlag = mPS.getConnectFlag();
+                        String presence = mPS.getPresence();
+                        String datetime = mPS.getDatetime();
+
+						if(isContainsZoneName(groups, zoneName)){
+                            Log.d("ddddd", "X3");
+                            int index = 0;
+                            for(Parent group : groups){
+                                if(group.zoneName.equals(zoneName)){
+                                    Child child = new Child(roomId, deviceId, roomNumber, connectFlag, presence, datetime);
+                                    group.addChildrenItem(child);
+                                    groups.set(index, group);
+                                    Log.d("ddddd", "X1");
+                                }
+                                index++;
+                            }
+						}else{
+							Child child = new Child(roomId, deviceId, roomNumber, connectFlag, presence, datetime);
+							Parent group = new Parent(zoneName);
+                            group.addChildrenItem(child);
+                            groups.add(group);
+                            Log.d("ddddd", "X2");
+							
+						}
+                    }
+                    Log.d( "MoniotringF", "handler: case 333" );
+
+                    adapter = new MonitoringExpandableListAdapter(getContext(), groups);
+                    listView.setAdapter(adapter);
+                    setListViewHeightBasedOnChildren(listView);
                     break;
             }
-            Log.d( "MoniotringF", "handler: case" );
-
         }
     };
 
-
+    //控制ExpandableListView的子項內容
+    boolean isContainsZoneName(ArrayList<Parent> groups,String zoneName){
+        for(Parent item : groups){
+            Log.d( "dddd", "zoneName - " + zoneName);
+            Log.d( "dddd", "item.zoneName - " + item.zoneName);
+            if(item.zoneName.equals(zoneName)){
+                return true;
+            }
+        }
+        return false;
+	}
+	
+	Parent getParent(String zoneName){
+		for(Parent item : groups){
+			if(item.zoneName == zoneName){
+				return item;				
+			}			
+		}		
+		return null;
+	}
 
 
     @Override
@@ -94,23 +159,7 @@ public class MonitoringFragment extends Fragment {
 
         cloudManager = new CloudManager(getContext());
 
-        //hannah_test
-        //new MyAsyncTask().execute(urlApiSys_zone);
     }
-
-
-
-    //hannah_test
-//    class MyAsyncTask extends AsyncTask<String, Void, Void> {
-//        @Override
-//        protected Void doInBackground(String... strings) {
-//            String url = strings[0];
-//            cloudManager.zoneAsync(url, handler);
-//
-//            return null;
-//        }
-//    }
-
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -178,7 +227,9 @@ public class MonitoringFragment extends Fragment {
     }
 
     private void initial(View root) {
-        expandableListView = (ExpandableListView) root.findViewById(R.id.expandable_listview);
+        listView = (ExpandableListView)root.findViewById(R.id.expandable_listview);
+
+//        expandableListView = (ExpandableListView) root.findViewById(R.id.expandable_listview);
 
         //hannah_test
 //        final TextView textView = root.findViewById(R.id.text_monitoring);
