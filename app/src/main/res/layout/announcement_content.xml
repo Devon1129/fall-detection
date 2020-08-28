@@ -4,7 +4,9 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/custom_toolbar" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-<!--            android:src="@drawable/ic_announcement_default"-->
+            <!--            android:src="@drawable/ic_announcement_default"-->
             <ImageView
                 android:id="@+id/icon"
                 android:layout_width="35dp"
@@ -44,8 +46,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-<!--                android:textAppearance="?android:attr/textAppearanceLarge"-->
-<!--                android:singleLine="true" 棄用?!-->
+                <!--                android:textAppearance="?android:attr/textAppearanceLarge"-->
+                <!--                android:singleLine="true" 棄用?!-->
                 <TextView
                     android:id="@+id/content"
                     android:layout_width="0dp"
@@ -55,7 +57,7 @@
                     android:lines="1"
                     android:ellipsize="end"
                     android:padding="2dp"
-                    android:text="Announcement"
+                    android:text="Announcement Content"
                     android:textColor="@color/colorAnnouncementContent"
                     android:textSize="16dp"
                     android:textStyle="bold" />

@@ -32,13 +32,6 @@
             android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
 
-        <activity
-            android:name="com.example.walabotsmartsecuritydefense.activity.AnnouncementContentActivity"
-            android:label="@string/actionbar_title_announcement"
-            android:launchMode="singleInstance"
-            android:screenOrientation="portrait" />
-
-
         <receiver android:name=".broadcastreceivers.NotificationCopyReceiver"
             android:enabled="true"
             android:exported="true"

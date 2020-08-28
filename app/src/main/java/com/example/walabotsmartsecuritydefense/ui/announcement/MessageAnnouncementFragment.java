@@ -1,6 +1,5 @@
 package com.example.walabotsmartsecuritydefense.ui.announcement;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,13 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.walabotsmartsecuritydefense.Application;
 import com.example.walabotsmartsecuritydefense.R;
-import com.example.walabotsmartsecuritydefense.activity.AnnouncementContentActivity;
 import com.example.walabotsmartsecuritydefense.adapter.AnnouncementAdapter;
 import com.example.walabotsmartsecuritydefense.manager.CloudManager;
 import com.example.walabotsmartsecuritydefense.table.Announcement;
@@ -110,23 +110,19 @@ public class MessageAnnouncementFragment extends Fragment {
             public void onItemClick(View view, int pos) {
                 Log.d(TAG, "onItemClick pos " + pos);
 
-                Intent intent = new Intent();
-                intent.setClass(getActivity(), AnnouncementContentActivity.class);
-
                 Announcement announcementInfo = announcements.get(pos);
-                int id = announcementInfo.getId();
-                Log.d(TAG, "onItemClick announcementInfo: " + announcementInfo);
-
-                Log.d(TAG, "onItemClick id: " + id);
                 String serialNumber = announcementInfo.getSerialNumber();
-
-                Log.d(TAG, "onItemClick serialNumber: " + serialNumber);
-                //Toast.makeText(getContext(), "SerialNumber: " + announcementInfo.getSerialNumber() + "; pos: " + pos, Toast.LENGTH_SHORT).show();
 
                 Bundle bundle = new Bundle();
                 bundle.putString("serialNumber", serialNumber);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                changeFragment(bundle);
+
+                int id = announcementInfo.getId();
+                Log.d(TAG, "onItemClick announcementInfo: " + announcementInfo);
+                Log.d(TAG, "onItemClick id: " + id);
+                Log.d(TAG, "onItemClick serialNumber: " + serialNumber);
+                //Toast.makeText(getContext(), "SerialNumber: " + announcementInfo.getSerialNumber() + "; pos: " + pos, Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -145,6 +141,16 @@ public class MessageAnnouncementFragment extends Fragment {
         }
     }
 
+    //切換fragment
+    private void changeFragment(Bundle bundle) {
+        Fragment fragment = new AnnouncementContentFragment();
+        fragment.setArguments(bundle);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.nav_host_fragment, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
 
     //將訊息佈告，依遞增排序
     private void BindData(RecyclerView view) {

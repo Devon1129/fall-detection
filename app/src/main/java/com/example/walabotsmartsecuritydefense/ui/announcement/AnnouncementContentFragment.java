@@ -1,16 +1,20 @@
-package com.example.walabotsmartsecuritydefense.activity;
+package com.example.walabotsmartsecuritydefense.ui.announcement;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.example.walabotsmartsecuritydefense.MainActivity;
 import com.example.walabotsmartsecuritydefense.R;
@@ -20,7 +24,8 @@ import org.litepal.LitePal;
 
 import java.util.List;
 
-public class AnnouncementContentActivity extends AppCompatActivity {
+
+public class AnnouncementContentFragment extends Fragment {
 
     private String TAG = getClass().toString();
 
@@ -29,17 +34,18 @@ public class AnnouncementContentActivity extends AppCompatActivity {
 
     private String serialNumber;
 
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.announcement_list_layout);
 
-        Bundle bundle = getIntent().getExtras();
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.announcement_content, container, false);
+
+        Bundle bundle = this.getArguments();
         serialNumber = bundle.getString("serialNumber");
 
-        initial();
+        initial(root);
 
-        Log.d(TAG, "serialNumber " + serialNumber);
 
         //查詢指定序列號(serialnumber)的相關欄位(content、createdate)
         if (serialNumber == null | serialNumber.matches("")) {
@@ -57,30 +63,35 @@ public class AnnouncementContentActivity extends AppCompatActivity {
             createDate.setText(announcementCreateDate);
             content.setText(announcementContent);
         }
+
+
+        return root;
+
+
+
     }
-
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-        if(keyCode == KeyEvent.KEYCODE_BACK) {
-            Intent intent = new Intent(AnnouncementContentActivity.this, MainActivity.class);
-            intent.putExtra("announcement", "101");
-            startActivity(intent);
-
-            finish();
-
-            finish();
-
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
-    private void initial() {
-        icon = (ImageView) findViewById(R.id.icon);
-        createDate = (TextView)findViewById(R.id.create_date);
-        content = (TextView)findViewById(R.id.content);
+    private void initial(View root) {
+        icon = (ImageView) root.findViewById(R.id.icon);
+        createDate = (TextView)root.findViewById(R.id.create_date);
+        content = (TextView)root.findViewById(R.id.content);
         content.setSingleLine(false);//取消只顯示一行機制
     }
+
+
+
+        //實體按鍵
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//
+//        if(keyCode == KeyEvent.KEYCODE_BACK) {
+//            Intent intent = new Intent(AnnouncementContentFragment.this, MainActivity.class);
+//            intent.putExtra("announcement", "101");
+//            startActivity(intent);
+//
+//            finish();
+//            return true;
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
+//
 }
